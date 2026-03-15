@@ -1,0 +1,13 @@
+Django==5.2.1
+psycopg[binary]==3.2.1
+redis==5.0.8
+celery==5.4.0
+django-redis==5.4.0
+Pillow==10.4.0
+python-decouple==3.8
+
+pytest==8.3.2
+pytest-django==4.9.0
+factory-boy==3.3.1
+Faker==28.1.0
+coverage==7.6.1
