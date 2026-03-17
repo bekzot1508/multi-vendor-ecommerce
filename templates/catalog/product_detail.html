@@ -1,0 +1,17 @@
+<h1>{{ product.name }}</h1>
+
+<p>{{ product.description }}</p>
+
+<h3>Variants</h3>
+
+<ul>
+  {% for v in product.variants.all %}
+    <li>{{ v.name }} — ${{ v.price }}</li>
+  {% endfor %}
+</ul>
+
+<h3>Images</h3>
+
+{% for img in product.images.all %}
+  <img src="{{ img.image.url }}" width="200">
+{% endfor %}

@@ -13,6 +13,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("health/", healthcheck_view, name="healthcheck"),
     path("users/", include("apps.users.urls", namespace="users")),
+    path("shops/", include("apps.shops.urls", namespace="shops")),
+    path("", include("apps.catalog.urls", namespace="catalog")),
 ]
 
 if settings.DEBUG:

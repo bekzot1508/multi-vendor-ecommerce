@@ -1,3 +1,11 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Shop
+
+
+@admin.register(Shop)
+class ShopAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "owner", "status", "created_at")
+    list_filter = ("status",)
+    search_fields = ("name", "owner__username", "owner__email")
+    prepopulated_fields = {"slug": ("name",)}
