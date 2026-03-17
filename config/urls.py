@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.http import HttpResponse
-from django.urls import path
+from django.urls import path, include
 
 
 def healthcheck_view(request):
@@ -12,6 +12,7 @@ def healthcheck_view(request):
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("health/", healthcheck_view, name="healthcheck"),
+    path("users/", include("apps.users.urls", namespace="users")),
 ]
 
 if settings.DEBUG:
