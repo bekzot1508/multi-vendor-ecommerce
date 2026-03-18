@@ -3,18 +3,35 @@
 {% block title %}Profile{% endblock %}
 
 {% block content %}
-  <h1>Profile</h1>
+  <h1 class="text-3xl font-bold mb-6">Profile</h1>
 
-  <p>Username: {{ request.user.username }}</p>
-  <p>Email: {{ request.user.email }}</p>
-  <p>Role: {{ request.user.role }}</p>
+  <div class="bg-white shadow rounded-xl p-6 space-y-3">
+      <p><strong>Username:</strong> {{ request.user.username }}</p>
+      <p><strong>Email:</strong> {{ request.user.email }}</p>
+      <p><strong>Role:</strong> {{ request.user.role }}</p>
+  </div>
 
-  <p><a href="{% url 'users:address_list' %}">My addresses</a></p>
+  <div class="mt-6 space-y-2">
 
-  {% if request.user.role == "seller" %}
-    <p><a href="{% url 'shops:create' %}">Create shop</a></p>
-    <p><a href="{% url 'catalog:seller_product_list' %}">Manage products</a></p>
-  {% endif %}
+    <a href="{% url 'users:address_list' %}"
+       class="block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+       My addresses
+    </a>
 
-  <p><a href="{% url 'users:logout' %}">Logout</a></p>
+    <a href="#"
+       class="block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+       Create shop
+    </a>
+
+    <a href="#"
+       class="block px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
+       Manage products
+    </a>
+
+    <a href="{% url 'users:logout' %}"
+       class="block px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+       Logout
+    </a>
+
+  </div>
 {% endblock %}

@@ -1,18 +1,30 @@
 from django.contrib.auth import get_user_model
 
+from .models import UserRole
+
 User = get_user_model()
 
 
 def create_user_with_role(form):
     """
-    Registration service.
+    Public registration service.
 
-    View emas, service user yaratadi.
-    Keyinchalik DRF qo‘shilganda ham shu service ishlatiladi.
+    Double security:
+    - form faqat customer/seller ko‘rsatadi
+    - service esa admin rolni qat'iyan bloklaydi
     """
 
-    user = form.save(commit=False)
-    user.role = form.cleaned_data["role"]
-    user.save()
+    selected_role = form.cleaned_data["role"]
 
+    if selected_role not in [UserRole.CUSTOMER, UserRole.SELLER]:
+        selected_role = UserRole.CUSTOMER
+
+    user = form.save(commit=False)
+    user.role = selected_role
+
+    # Public registration orqali hech qachon staff/superuser bo‘lmasin
+    user.is_staff = False
+    user.is_superuser = False
+
+    user.save()
     return user
