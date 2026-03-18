@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Product Form{% endblock %}
+
+{% block content %}
+  <h1>
+    {% if product %}
+      Edit Product
+    {% else %}
+      Create Product
+    {% endif %}
+  </h1>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit">
+      {% if product %}
+        Update Product
+      {% else %}
+        Create Product
+      {% endif %}
+    </button>
+  </form>
+
+  <p>
+    <a href="{% url 'catalog:seller_product_list' %}">← Back to product list</a>
+  </p>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}My Products{% endblock %}
+
+{% block content %}
+  <h1>My Products</h1>
+
+  <p><strong>Shop:</strong> {{ shop.name }}</p>
+
+  <p>
+    <a href="{% url 'catalog:seller_product_create' %}">+ Create Product</a>
+  </p>
+
+  {% if products %}
+    <table border="1" cellpadding="8" cellspacing="0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Brand</th>
+          <th>Active</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in products %}
+          <tr>
+            <td>{{ product.id }}</td>
+            <td>{{ product.name }}</td>
+            <td>{{ product.category }}</td>
+            <td>{{ product.brand|default:"-" }}</td>
+            <td>{{ product.is_active }}</td>
+            <td>
+              <a href="{% url 'catalog:product_detail' product.slug %}">View</a>
+              |
+              <a href="{% url 'catalog:seller_product_edit' product.pk %}">Edit</a>
+              |
+              <a href="{% url 'catalog:seller_product_delete' product.pk %}">Delete</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No products yet.</p>
+  {% endif %}
+
+  <p>
+    <a href="{% url 'users:profile' %}">← Back to profile</a>
+  </p>
+{% endblock %}

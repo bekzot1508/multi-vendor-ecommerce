@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Address Form{% endblock %}
+
+{% block content %}
+  <h1>
+    {% if form.instance.pk %}
+      Edit Address
+    {% else %}
+      Create Address
+    {% endif %}
+  </h1>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit">
+      {% if form.instance.pk %}
+        Update Address
+      {% else %}
+        Save Address
+      {% endif %}
+    </button>
+  </form>
+
+  <p>
+    <a href="{% url 'users:address_list' %}">← Back to addresses</a>
+  </p>
+{% endblock %}

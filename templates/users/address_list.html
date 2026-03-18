@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}My Addresses{% endblock %}
+
+{% block content %}
+  <h1>My Addresses</h1>
+
+  <p>
+    <a href="{% url 'users:address_create' %}">+ Add new address</a>
+  </p>
+
+  {% if addresses %}
+    <div>
+      {% for address in addresses %}
+        <div style="border:1px solid #ccc; padding:16px; margin-bottom:12px;">
+          <p><strong>{{ address.full_name }}</strong></p>
+          <p>Phone: {{ address.phone }}</p>
+          <p>{{ address.country }}, {{ address.city }}{% if address.area %}, {{ address.area }}{% endif %}</p>
+          <p>{{ address.line1 }}{% if address.line2 %}, {{ address.line2 }}{% endif %}</p>
+          {% if address.postal_code %}
+            <p>Postal code: {{ address.postal_code }}</p>
+          {% endif %}
+
+          <p>
+            {% if address.is_default_shipping %}
+              <span>[Default Shipping]</span>
+            {% endif %}
+            {% if address.is_default_billing %}
+              <span>[Default Billing]</span>
+            {% endif %}
+          </p>
+
+          <p>
+            <a href="{% url 'users:address_edit' address.pk %}">Edit</a>
+            |
+            <a href="{% url 'users:address_delete' address.pk %}">Delete</a>
+          </p>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No addresses yet.</p>
+  {% endif %}
+
+  <p>
+    <a href="{% url 'users:profile' %}">← Back to profile</a>
+  </p>
+{% endblock %}

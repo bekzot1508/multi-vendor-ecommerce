@@ -1,9 +1,20 @@
-<h1>Profile</h1>
+{% extends "base.html" %}
 
-<p>Username: {{ request.user.username }}</p>
-<p>Email: {{ request.user.email }}</p>
-<p>Role: {{ request.user.role }}</p>
+{% block title %}Profile{% endblock %}
 
-<a href="{% url 'users:address_list' %}">My addresses</a>
-<br>
-<a href="{% url 'users:logout' %}">Logout</a>
+{% block content %}
+  <h1>Profile</h1>
+
+  <p>Username: {{ request.user.username }}</p>
+  <p>Email: {{ request.user.email }}</p>
+  <p>Role: {{ request.user.role }}</p>
+
+  <p><a href="{% url 'users:address_list' %}">My addresses</a></p>
+
+  {% if request.user.role == "seller" %}
+    <p><a href="{% url 'shops:create' %}">Create shop</a></p>
+    <p><a href="{% url 'catalog:seller_product_list' %}">Manage products</a></p>
+  {% endif %}
+
+  <p><a href="{% url 'users:logout' %}">Logout</a></p>
+{% endblock %}

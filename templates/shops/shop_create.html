@@ -1,10 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}Create Shop{% endblock %}
+
+{% block content %}
+  <h1>Create Shop</h1>
+
+  <p>Your shop will stay in pending status until admin approval.</p>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit">Create Shop</button>
+  </form>
+
+  <p>
+    <a href="{% url 'users:profile' %}">← Back to profile</a>
+  </p>
+{% endblock %}

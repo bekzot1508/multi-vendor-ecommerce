@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Address{% endblock %}
+
+{% block content %}
+  <h1>Delete Address</h1>
+
+  <p>Are you sure you want to delete this address?</p>
+
+  <div style="border:1px solid #ccc; padding:16px; margin-bottom:12px;">
+    <p><strong>{{ address.full_name }}</strong></p>
+    <p>Phone: {{ address.phone }}</p>
+    <p>{{ address.country }}, {{ address.city }}{% if address.area %}, {{ address.area }}{% endif %}</p>
+    <p>{{ address.line1 }}{% if address.line2 %}, {{ address.line2 }}{% endif %}</p>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Yes, delete</button>
+  </form>
+
+  <p>
+    <a href="{% url 'users:address_list' %}">Cancel</a>
+  </p>
+{% endblock %}
