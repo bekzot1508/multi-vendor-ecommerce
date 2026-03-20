@@ -19,6 +19,13 @@ class Cart(TimeStampedModel):
         related_name="cart",
     )
 
+    coupon = models.ForeignKey(
+        "promotions.Coupon",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+
     def __str__(self):
         return f"Cart of {self.user_id}"
 
