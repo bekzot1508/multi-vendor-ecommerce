@@ -1,8 +1,12 @@
 from django.db import transaction
 
 from apps.inventory.models import InventoryRecord
-
 from .models import Cart, CartItem
+
+from apps.promotions.services import (
+    calculate_coupon_discount,
+    validate_coupon_for_cart,
+)
 
 #**************************
 #   Get or create cart
@@ -86,15 +90,34 @@ def remove_cart_item(user, item_id):
 #   Cart total
 #**********************
 def calculate_cart_totals(cart):
+
     subtotal = sum(item.line_total() for item in cart.items.all())
+
+    discount = 0
+
+    if cart.coupon:
+        discount = calculate_coupon_discount(cart.coupon, subtotal)
+
+    total = subtotal - discount
 
     return {
         "subtotal": subtotal,
-        "total": subtotal,  # coupon/shipping keyin qo‘shiladi
+        "discount": discount,
+        "total": total,
     }
 
 
+#**************************
+#   Apply coupon service
+#**************************
+def apply_coupon_to_cart(user, code):
+    cart = user.cart
 
+    coupon = validate_coupon_for_cart(user, cart, code)
 
+    cart.coupon = coupon
+    cart.save()
+
+    return coupon
 
 

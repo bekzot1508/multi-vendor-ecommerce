@@ -12,10 +12,10 @@ from .services import (
     remove_cart_item,
     update_cart_item_quantity,
 )
-
+from apps.cart.services import apply_coupon_to_cart
 
 #**************************
-#   🛒 Cart page
+#   🛒 Cart page views
 #**************************
 class CartDetailView(LoginRequiredMixin, View):
     template_name = "cart/cart_detail.html"
@@ -35,7 +35,7 @@ class CartDetailView(LoginRequiredMixin, View):
 
 
 #**************************
-#   ➕ Add to cart
+#   ➕ Add to cart views
 #**************************
 class AddToCartView(LoginRequiredMixin, View):
     def post(self, request, variant_id):
@@ -52,9 +52,9 @@ class AddToCartView(LoginRequiredMixin, View):
         return redirect("cart:detail")
 
 
-#**************************
-#   ✏️ Update quantity
-#**************************
+#*****************************
+#   ✏️ Update quantity views
+#*****************************
 class UpdateCartItemView(LoginRequiredMixin, View):
     def post(self, request, item_id):
         quantity = int(request.POST.get("quantity", 1))
@@ -68,12 +68,28 @@ class UpdateCartItemView(LoginRequiredMixin, View):
         return redirect("cart:detail")
 
 
-#**************************
-#   ❌ Remove item
-#**************************
+#***************************
+#   ❌ Remove item views
+#***************************
 class RemoveCartItemView(LoginRequiredMixin, View):
     def post(self, request, item_id):
         remove_cart_item(request.user, item_id)
         messages.success(request, "Item removed.")
+
+        return redirect("cart:detail")
+
+
+#************************
+#   Apply Coupon views
+#************************
+class ApplyCouponView(LoginRequiredMixin, View):
+    def post(self, request):
+        code = request.POST.get("code")
+
+        try:
+            apply_coupon_to_cart(request.user, code)
+            messages.success(request, "Coupon applied")
+        except ValueError as e:
+            messages.error(request, str(e))
 
         return redirect("cart:detail")
