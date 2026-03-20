@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Cart{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Your Cart</h1>
+
+{% if cart.items.all %}
+<table class="min-w-full bg-white shadow rounded">
+  <thead>
+    <tr class="bg-gray-100">
+      <th class="p-3 text-left">Product</th>
+      <th class="p-3">Price</th>
+      <th class="p-3">Quantity</th>
+      <th class="p-3">Total</th>
+      <th class="p-3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for item in cart.items.all %}
+    <tr class="border-t">
+      <td class="p-3">{{ item.variant.product.name }} — {{ item.variant.name }}</td>
+      <td class="p-3 text-center">${{ item.unit_price }}</td>
+
+      <td class="p-3 text-center">
+        <form method="post" action="{% url 'cart:update' item.id %}">
+          {% csrf_token %}
+          <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="w-20 border p-1">
+          <button class="ml-2 bg-blue-500 text-white px-2 py-1 rounded">Update</button>
+        </form>
+      </td>
+
+      <td class="p-3 text-center">${{ item.line_total }}</td>
+
+      <td class="p-3 text-center">
+        <form method="post" action="{% url 'cart:remove' item.id %}">
+          {% csrf_token %}
+          <button class="bg-red-500 text-white px-2 py-1 rounded">Remove</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="mt-6 text-right">
+  <p class="text-xl font-bold">Subtotal: ${{ totals.subtotal }}</p>
+</div>
+
+{% else %}
+<p>Your cart is empty.</p>
+{% endif %}
+
+{% endblock %}
