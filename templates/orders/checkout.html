@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Checkout</h1>
+
+<form method="post">
+  {% csrf_token %}
+
+  <h3 class="font-semibold mb-2">Shipping Address</h3>
+  <select name="shipping_address" class="border p-2 mb-4 w-full">
+    {% for a in addresses %}
+      <option value="{{ a.id }}">{{ a.full_name }} — {{ a.city }}</option>
+    {% endfor %}
+  </select>
+
+  <h3 class="font-semibold mb-2">Billing Address</h3>
+  <select name="billing_address" class="border p-2 mb-6 w-full">
+    {% for a in addresses %}
+      <option value="{{ a.id }}">{{ a.full_name }} — {{ a.city }}</option>
+    {% endfor %}
+  </select>
+
+  <button class="bg-green-600 text-white px-6 py-2 rounded">
+    Place Order
+  </button>
+</form>
+{% endblock %}

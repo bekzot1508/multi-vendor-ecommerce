@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Order {{ order.order_number }}{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">
+  Order {{ order.order_number }}
+</h1>
+
+<p>Status: {{ order.status }}</p>
+<p>Total: ${{ order.total_amount }}</p>
+
+<h3 class="mt-6 font-semibold">Items</h3>
+
+<ul>
+  {% for item in order.items.all %}
+    <li>
+      {{ item.product_name_snapshot }} —
+      {{ item.variant_name_snapshot }}
+      x {{ item.quantity }}
+      = ${{ item.line_total }}
+    </li>
+  {% endfor %}
+</ul>
+
+{% endblock %}
