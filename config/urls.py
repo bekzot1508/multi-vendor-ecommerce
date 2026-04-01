@@ -17,6 +17,7 @@ urlpatterns = [
     path("", include("apps.catalog.urls", namespace="catalog")),
     path("cart/", include("apps.cart.urls", namespace="cart")),
     path("orders/", include("apps.orders.urls", namespace="orders")),
+    path("payments/", include("apps.payments.urls", namespace="payments")),
 ]
 
 if settings.DEBUG:

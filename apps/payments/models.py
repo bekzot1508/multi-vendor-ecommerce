@@ -3,7 +3,9 @@ from django.db import models
 from apps.common.models import TimeStampedModel
 from apps.orders.models import Order
 
-
+#**********************
+#   Payment model
+#**********************
 class Payment(TimeStampedModel):
     class Status(models.TextChoices):
         CREATED = "created", "Created"
@@ -31,6 +33,9 @@ class Payment(TimeStampedModel):
         return f"{self.external_reference} - {self.status}"
 
 
+#******************************
+#   PaymentTransaction model
+#******************************
 class PaymentTransaction(TimeStampedModel):
     class TransactionType(models.TextChoices):
         INIT = "init", "Init"
@@ -54,6 +59,9 @@ class PaymentTransaction(TimeStampedModel):
         return f"{self.payment_id} - {self.transaction_type} - {self.status}"
 
 
+#*******************************
+#   PaymentCallbackLog model
+#*******************************
 class PaymentCallbackLog(TimeStampedModel):
     callback_id = models.CharField(max_length=100, unique=True)
     payment = models.ForeignKey(

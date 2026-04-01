@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Mock Payment{% endblock %}
+
+{% block content %}
+  <h1 class="text-2xl font-bold mb-4">Mock Payment Gateway</h1>
+
+  <div class="bg-white shadow rounded p-6 space-y-3">
+    <p><strong>Order:</strong> {{ payment.order.order_number }}</p>
+    <p><strong>Payment Ref:</strong> {{ payment.external_reference }}</p>
+    <p><strong>Amount:</strong> ${{ payment.amount }}</p>
+    <p><strong>Status:</strong> {{ payment.status }}</p>
+  </div>
+
+  <form method="post" action="{% url 'payments:mock_action' payment.id %}" class="mt-6 flex gap-3">
+    {% csrf_token %}
+    <button
+      type="submit"
+      name="action"
+      value="success"
+      class="bg-green-600 text-white px-4 py-2 rounded"
+    >
+      Pay Success
+    </button>
+
+    <button
+      type="submit"
+      name="action"
+      value="fail"
+      class="bg-red-600 text-white px-4 py-2 rounded"
+    >
+      Pay Fail
+    </button>
+
+    <button
+      type="submit"
+      name="action"
+      value="cancel"
+      class="bg-gray-600 text-white px-4 py-2 rounded"
+    >
+      Cancel Payment
+    </button>
+  </form>
+{% endblock %}

@@ -7,7 +7,8 @@ from apps.cart.models import Cart
 from apps.inventory.services import reserve_stock
 from apps.promotions.services import calculate_coupon_discount
 
-from .models import Order, OrderItem
+from .models import Order, OrderItem, OrderStatusHistory
+from apps.payments.services import create_payment_for_order
 
 
 #**********************
@@ -59,5 +60,14 @@ def create_order_from_cart(user, shipping_address, billing_address):
         )
 
     cart.items.all().delete()
+
+    OrderStatusHistory.objects.create(
+        order=order,
+        old_status=Order.Status.PENDING,
+        new_status=Order.Status.AWAITING_PAYMENT,
+        note="Order created from cart, waiting for payment.",
+    )
+
+    create_payment_for_order(order)
 
     return order

@@ -39,7 +39,7 @@ class CheckoutView(LoginRequiredMixin, View):
             )
 
             messages.success(request, "Order created successfully")
-            return redirect("orders:detail", order_id=order.id)
+            return redirect("payments:mock_page", payment_id=order.payment.id)
 
         except ValueError as e:
             messages.error(request, str(e))
