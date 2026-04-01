@@ -3,12 +3,14 @@ import uuid
 from django.db import transaction
 from django.utils import timezone
 
-from apps.cart.models import Cart
+
 from apps.inventory.services import reserve_stock
 from apps.promotions.services import calculate_coupon_discount
-
-from .models import Order, OrderItem, OrderStatusHistory
 from apps.payments.services import create_payment_for_order
+from apps.notifications.tasks import create_order_notification_task
+
+from apps.cart.models import Cart
+from .models import Order, OrderItem, OrderStatusHistory
 
 
 #**********************
@@ -69,5 +71,6 @@ def create_order_from_cart(user, shipping_address, billing_address):
     )
 
     create_payment_for_order(order)
+    create_order_notification_task.delay(order.id)
 
     return order
