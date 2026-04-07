@@ -62,6 +62,24 @@ class OrderDetailView(LoginRequiredMixin, View):
         )
 
 
+#***************************
+#   📄 Order list View
+#***************************
+class OrderListView(LoginRequiredMixin, View):
+    template_name = "orders/order_list.html"
+
+    def get(self, request):
+        orders = (
+            request.user.orders
+            .prefetch_related("items")
+            .order_by("-created_at")
+        )
+
+        return render(
+            request,
+            self.template_name,
+            {"orders": orders},
+        )
 
 
 
