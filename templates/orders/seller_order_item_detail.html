@@ -3,34 +3,46 @@
 {% block title %}Seller Order Item{% endblock %}
 
 {% block content %}
-<h1 class="text-2xl font-bold mb-4">Seller Order Item Detail</h1>
+  <h1 class="text-2xl font-bold mb-4">Seller Order Item Detail</h1>
 
-<div class="bg-white shadow rounded p-6 space-y-2">
-  <p><strong>Order:</strong> {{ item.order.order_number }}</p>
-  <p><strong>Product:</strong> {{ item.product_name_snapshot }}</p>
-  <p><strong>Variant:</strong> {{ item.variant_name_snapshot }}</p>
-  <p><strong>SKU:</strong> {{ item.sku_snapshot }}</p>
-  <p><strong>Quantity:</strong> {{ item.quantity }}</p>
-  <p><strong>Status:</strong> {{ item.status }}</p>
-  <p><strong>Total:</strong> ${{ item.line_total }}</p>
-</div>
+  <div class="bg-white shadow rounded p-6 space-y-2">
+    <p><strong>Order:</strong> {{ item.order.order_number }}</p>
+    <p><strong>Product:</strong> {{ item.product_name_snapshot }}</p>
+    <p><strong>Variant:</strong> {{ item.variant_name_snapshot }}</p>
+    <p><strong>SKU:</strong> {{ item.sku_snapshot }}</p>
+    <p><strong>Quantity:</strong> {{ item.quantity }}</p>
+    <p><strong>Status:</strong> {{ item.status }}</p>
+    <p><strong>Total:</strong> ${{ item.line_total }}</p>
+  </div>
 
-<div class="mt-6 bg-white shadow rounded p-6">
-  <h2 class="text-lg font-semibold mb-4">Update Status</h2>
+  <div class="mt-6 bg-white shadow rounded p-6">
+    <h2 class="text-lg font-semibold mb-4">Update Status</h2>
 
-  <form method="post" action="{% url 'orders:seller_item_status' item.id %}">
-    {% csrf_token %}
+    <form method="post" action="{% url 'orders:seller_item_status' item.id %}">
+      {% csrf_token %}
 
-    <select name="status" class="border p-2 rounded w-full mb-4">
-      <option value="processing">Processing</option>
-      <option value="packed">Packed</option>
-      <option value="shipped">Shipped</option>
-      <option value="delivered">Delivered</option>
-    </select>
+      <select name="status" class="border p-2 rounded w-full mb-4">
+        <option value="processing">Processing</option>
+        <option value="packed">Packed</option>
+        <option value="shipped">Shipped</option>
+        <option value="delivered">Delivered</option>
+      </select>
 
-    <button class="bg-blue-600 text-white px-4 py-2 rounded">
-      Update Status
-    </button>
-  </form>
-</div>
+      <button class="bg-blue-600 text-white px-4 py-2 rounded">
+        Update Status
+      </button>
+    </form>
+  </div>
+
+  {% if item.order.shipment %}
+    <div class="mt-6">
+      <a
+        href="{% url 'shipping:seller_detail' item.order.shipment.id %}"
+        class="text-blue-600 underline"
+      >
+        Manage Shipment
+      </a>
+    </div>
+  {% endif %}
+
 {% endblock %}

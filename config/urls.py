@@ -19,6 +19,7 @@ urlpatterns = [
     path("orders/", include("apps.orders.urls", namespace="orders")),
     path("payments/", include("apps.payments.urls", namespace="payments")),
     path("notifications/", include("apps.notifications.urls", namespace="notifications")),
+    path("shipping/", include("apps.shipping.urls", namespace="shipping")),
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Shipment {{ shipment.tracking_code }}{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Shipment Details</h1>
+
+<div class="bg-white shadow rounded p-6 space-y-2">
+  <p><strong>Order:</strong> {{ shipment.order.order_number }}</p>
+  <p><strong>Tracking code:</strong> {{ shipment.tracking_code }}</p>
+  <p><strong>Method:</strong> {{ shipment.shipping_method.name }}</p>
+  <p><strong>Status:</strong> {{ shipment.status }}</p>
+  <p><strong>Shipped at:</strong> {{ shipment.shipped_at|default:"-" }}</p>
+  <p><strong>Delivered at:</strong> {{ shipment.delivered_at|default:"-" }}</p>
+</div>
+{% endblock %}

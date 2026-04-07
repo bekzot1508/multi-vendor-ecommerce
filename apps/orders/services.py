@@ -6,6 +6,7 @@ from django.utils import timezone
 from apps.inventory.services import reserve_stock
 from apps.promotions.services import calculate_coupon_discount
 from apps.payments.services import create_payment_for_order
+from apps.shipping.services import create_shipment_for_order
 from apps.notifications.tasks import create_order_notification_task
 
 from apps.cart.models import Cart
@@ -16,7 +17,7 @@ from .models import Order, OrderItem, OrderStatusHistory
 #   CORE FUNCTION
 #**********************
 @transaction.atomic
-def create_order_from_cart(user, shipping_address, billing_address):
+def create_order_from_cart(user, shipping_address, billing_address, shipping_method):
 
     cart = Cart.objects.select_for_update().get(user=user)
 
@@ -29,7 +30,8 @@ def create_order_from_cart(user, shipping_address, billing_address):
     if cart.coupon:
         discount = calculate_coupon_discount(cart.coupon, subtotal)
 
-    total = subtotal - discount
+    shipping_amount = shipping_method.price
+    total = subtotal - discount + shipping_amount
 
     order = Order.objects.create(
         user=user,
@@ -39,6 +41,7 @@ def create_order_from_cart(user, shipping_address, billing_address):
         billing_address_snapshot=str(billing_address),
         subtotal=subtotal,
         discount_amount=discount,
+        shipping_amount=shipping_amount,
         total_amount=total,
         placed_at=timezone.now(),
     )
@@ -71,6 +74,7 @@ def create_order_from_cart(user, shipping_address, billing_address):
     )
 
     create_payment_for_order(order)
+    create_shipment_for_order(order=order, shipping_method=shipping_method)
     create_order_notification_task.delay(order.id)
 
     return order

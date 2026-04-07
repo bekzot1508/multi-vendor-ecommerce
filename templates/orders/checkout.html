@@ -22,6 +22,15 @@
     {% endfor %}
   </select>
 
+  <h3 class="font-semibold mb-2">Shipping Method</h3>
+  <select name="shipping_method" class="border p-2 mb-6 w-full">
+    {% for method in shipping_methods %}
+      <option value="{{ method.id }}">
+        {{ method.name }} — ${{ method.price }} ({{ method.estimated_days }} days)
+      </option>
+    {% endfor %}
+  </select>
+
   <button class="bg-green-600 text-white px-6 py-2 rounded">
     Place Order
   </button>
