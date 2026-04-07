@@ -54,6 +54,13 @@ class Order(TimeStampedModel):
 #   OrderItem model
 #**********************
 class OrderItem(TimeStampedModel):
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pending"
+        PROCESSING = "processing", "Processing"
+        PACKED = "packed", "Packed"
+        SHIPPED = "shipped", "Shipped"
+        DELIVERED = "delivered", "Delivered"
+        CANCELLED = "cancelled", "Cancelled"
 
     order = models.ForeignKey(
         Order,
@@ -84,6 +91,12 @@ class OrderItem(TimeStampedModel):
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
 
     line_total = models.DecimalField(max_digits=10, decimal_places=2)
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING,
+    )
 
     def __str__(self):
         return f"{self.product_name_snapshot} x {self.quantity}"

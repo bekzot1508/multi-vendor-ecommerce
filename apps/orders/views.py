@@ -1,11 +1,15 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
 
 from apps.users.models import Address
+from apps.users.models import UserRole
+from .models import OrderItem
 
-from .services import create_order_from_cart
+from .selectors import get_seller_order_items
+
+from .services import create_order_from_cart, update_seller_order_item_status
 
 
 #***********************
@@ -82,6 +86,72 @@ class OrderListView(LoginRequiredMixin, View):
         )
 
 
+#============================================================================================
+# order managermnet
+
+class SellerOrderItemListView(LoginRequiredMixin, View):
+    template_name = "orders/seller_order_item_list.html"
+
+    def get(self, request):
+        if request.user.role != UserRole.SELLER:
+            messages.error(request, "Only sellers can access this page.")
+            return redirect("users:profile")
+
+        items = get_seller_order_items(request.user)
+
+        return render(
+            request,
+            self.template_name,
+            {"items": items},
+        )
+
+
+class SellerOrderItemDetailView(LoginRequiredMixin, View):
+    template_name = "orders/seller_order_item_detail.html"
+
+    def get(self, request, item_id):
+        if request.user.role != UserRole.SELLER:
+            messages.error(request, "Only sellers can access this page.")
+            return redirect("users:profile")
+
+        item = get_object_or_404(
+            OrderItem.objects.select_related("order", "product", "variant", "shop"),
+            id=item_id,
+            shop__owner=request.user,
+        )
+
+        return render(
+            request,
+            self.template_name,
+            {"item": item},
+        )
+
+
+class SellerOrderItemStatusUpdateView(LoginRequiredMixin, View):
+    def post(self, request, item_id):
+        if request.user.role != UserRole.SELLER:
+            messages.error(request, "Only sellers can update order items.")
+            return redirect("users:profile")
+
+        item = get_object_or_404(
+            OrderItem.objects.select_related("shop__owner", "order"),
+            id=item_id,
+            shop__owner=request.user,
+        )
+
+        new_status = request.POST.get("status")
+
+        try:
+            update_seller_order_item_status(
+                seller_user=request.user,
+                order_item=item,
+                new_status=new_status,
+            )
+            messages.success(request, "Order item status updated.")
+        except ValueError as e:
+            messages.error(request, str(e))
+
+        return redirect("orders:seller_item_detail", item_id=item.id)
 
 
 

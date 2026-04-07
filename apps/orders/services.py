@@ -3,7 +3,6 @@ import uuid
 from django.db import transaction
 from django.utils import timezone
 
-
 from apps.inventory.services import reserve_stock
 from apps.promotions.services import calculate_coupon_discount
 from apps.payments.services import create_payment_for_order
@@ -59,6 +58,7 @@ def create_order_from_cart(user, shipping_address, billing_address):
             quantity=item.quantity,
             unit_price=item.unit_price,
             line_total=item.line_total(),
+            status=OrderItem.Status.PENDING,
         )
 
     cart.items.all().delete()
@@ -74,3 +74,60 @@ def create_order_from_cart(user, shipping_address, billing_address):
     create_order_notification_task.delay(order.id)
 
     return order
+
+
+#**************************************
+#  Seller item status update service
+#**************************************
+@transaction.atomic
+def update_seller_order_item_status(*, seller_user, order_item, new_status):
+    """
+    Seller faqat o'z shopiga tegishli order itemni yangilay oladi.
+    """
+
+    if order_item.shop.owner_id != seller_user.id:
+        raise ValueError("You cannot manage this order item")
+
+    allowed_statuses = {
+        OrderItem.Status.PROCESSING,
+        OrderItem.Status.PACKED,
+        OrderItem.Status.SHIPPED,
+        OrderItem.Status.DELIVERED,
+    }
+
+    if new_status not in allowed_statuses:
+        raise ValueError("Invalid status")
+
+    old_item_status = order_item.status
+    order_item.status = new_status
+    order_item.save(update_fields=["status", "updated_at"])
+
+    order = order_item.order
+
+    old_order_status = order.status
+    updated_order_status = None
+
+    if new_status == OrderItem.Status.PROCESSING and order.status == Order.Status.PAID:
+        updated_order_status = Order.Status.PROCESSING
+
+    elif new_status == OrderItem.Status.SHIPPED and order.status in [Order.Status.PAID, Order.Status.PROCESSING]:
+        updated_order_status = Order.Status.SHIPPED
+
+    elif new_status == OrderItem.Status.DELIVERED:
+        all_items_delivered = not order.items.exclude(status=OrderItem.Status.DELIVERED).exists()
+        if all_items_delivered:
+            updated_order_status = Order.Status.DELIVERED
+
+    if updated_order_status and updated_order_status != old_order_status:
+        order.status = updated_order_status
+        order.save(update_fields=["status", "updated_at"])
+
+        OrderStatusHistory.objects.create(
+            order=order,
+            old_status=old_order_status,
+            new_status=updated_order_status,
+            changed_by=seller_user,
+            note=f"Seller updated item {order_item.id} from {old_item_status} to {new_status}.",
+        )
+
+    return order_item
