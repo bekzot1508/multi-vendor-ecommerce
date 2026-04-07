@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Write Review{% endblock %}
+
+{% block content %}
+  <h1 class="text-2xl font-bold mb-4">Write Review</h1>
+
+  <div class="bg-white shadow rounded p-6 mb-6">
+    <p><strong>Product:</strong> {{ order_item.product_name_snapshot }}</p>
+    <p><strong>Variant:</strong> {{ order_item.variant_name_snapshot }}</p>
+    <p><strong>Order:</strong> {{ order_item.order.order_number }}</p>
+  </div>
+
+  <form method="post" class="bg-white shadow rounded p-6 space-y-4">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button class="bg-blue-600 text-white px-4 py-2 rounded">
+      Submit Review
+    </button>
+  </form>
+{% endblock %}

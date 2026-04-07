@@ -2,110 +2,131 @@
 {% block title %}{{ product.name }}{% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto px-4 py-10">
+  <div class="max-w-6xl mx-auto px-4 py-10">
 
-  <!-- PRODUCT HEADER -->
-  <div class="mb-8">
-    <h1 class="text-4xl font-bold text-slate-900 mb-3">
-      {{ product.name }}
-    </h1>
+    <!-- PRODUCT HEADER -->
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-slate-900 mb-3">
+        {{ product.name }}
+      </h1>
 
-    {% if product.description %}
-      <p class="text-slate-600 text-lg leading-relaxed">
-        {{ product.description }}
-      </p>
-    {% endif %}
-  </div>
+      {% if product.description %}
+        <p class="text-slate-600 text-lg leading-relaxed">
+          {{ product.description }}
+        </p>
+      {% endif %}
+    </div>
 
 
-  <!-- VARIANTS -->
-  <div class="mb-12">
-    <h2 class="text-2xl font-semibold text-slate-900 mb-5">
-      Variants
-    </h2>
+    <!-- VARIANTS -->
+    <div class="mb-12">
+      <h2 class="text-2xl font-semibold text-slate-900 mb-5">
+        Variants
+      </h2>
 
-    <div class="space-y-4">
+      <div class="space-y-4">
 
-      {% for v in product.variants.all %}
-      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+        {% for v in product.variants.all %}
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
 
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-          <!-- Variant info -->
-          <div>
-            <p class="text-lg font-semibold text-slate-900">
-              {{ v.name }}
-            </p>
+            <!-- Variant info -->
+            <div>
+              <p class="text-lg font-semibold text-slate-900">
+                {{ v.name }}
+              </p>
 
-            <p class="text-blue-600 text-xl font-bold mt-1">
-              ${{ v.price }}
-            </p>
+              <p class="text-blue-600 text-xl font-bold mt-1">
+                ${{ v.price }}
+              </p>
+            </div>
+
+
+            <!-- Cart section -->
+            {% if request.user.is_authenticated %}
+              <form
+                method="post"
+                action="{% url 'cart:add' v.id %}"
+                class="flex items-center gap-3"
+              >
+                {% csrf_token %}
+
+                <input
+                  type="number"
+                  name="quantity"
+                  value="1"
+                  min="1"
+                  class="w-20 border border-slate-300 rounded-lg px-3 py-2 text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+
+                <button
+                  type="submit"
+                  class="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold shadow hover:bg-blue-700 transition"
+                >
+                  Add to cart
+                </button>
+              </form>
+
+            {% else %}
+              <a
+                href="{% url 'users:login' %}"
+                class="bg-blue-50 text-blue-700 px-5 py-2.5 rounded-lg font-semibold hover:bg-blue-100 transition"
+              >
+                Login to add
+              </a>
+            {% endif %}
+
           </div>
 
-
-          <!-- Cart section -->
-          {% if request.user.is_authenticated %}
-            <form
-              method="post"
-              action="{% url 'cart:add' v.id %}"
-              class="flex items-center gap-3"
-            >
-              {% csrf_token %}
-
-              <input
-                type="number"
-                name="quantity"
-                value="1"
-                min="1"
-                class="w-20 border border-slate-300 rounded-lg px-3 py-2 text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-
-              <button
-                type="submit"
-                class="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold shadow hover:bg-blue-700 transition"
-              >
-                Add to cart
-              </button>
-            </form>
-
-          {% else %}
-            <a
-              href="{% url 'users:login' %}"
-              class="bg-blue-50 text-blue-700 px-5 py-2.5 rounded-lg font-semibold hover:bg-blue-100 transition"
-            >
-              Login to add
-            </a>
-          {% endif %}
-
         </div>
+        {% endfor %}
 
       </div>
-      {% endfor %}
-
     </div>
-  </div>
 
 
-  <!-- IMAGES -->
-  <div>
-    <h2 class="text-2xl font-semibold text-slate-900 mb-5">
-      Images
-    </h2>
+    <!-- IMAGES -->
+    <div>
+      <h2 class="text-2xl font-semibold text-slate-900 mb-5">
+        Images
+      </h2>
 
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
 
-      {% for img in product.images.all %}
-        <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-          <img
-            src="{{ img.image.url }}"
-            alt="{{ img.alt_text }}"
-            class="w-full h-48 object-cover"
-          >
-        </div>
-      {% endfor %}
+        {% for img in product.images.all %}
+          <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+            <img
+              src="{{ img.image.url }}"
+              alt="{{ img.alt_text }}"
+              class="w-full h-48 object-cover"
+            >
+          </div>
+        {% endfor %}
 
+      </div>
     </div>
-  </div>
 
-</div>
+
+  <!--  Reviews-->
+    <h3 class="text-xl font-semibold mt-8 mb-3">Reviews</h3>
+
+    {% if reviews %}
+      <div class="space-y-4">
+        {% for review in reviews %}
+          <div class="bg-white shadow rounded p-4">
+            <p class="font-semibold">{{ review.user.username }}</p>
+            <p class="text-yellow-600">Rating: {{ review.rating }}/5</p>
+            {% if review.comment %}
+              <p class="text-gray-700 mt-2">{{ review.comment }}</p>
+            {% endif %}
+            <p class="text-xs text-gray-400 mt-2">{{ review.created_at }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No reviews yet.</p>
+    {% endif %}
+
+  </div>
 {% endblock %}

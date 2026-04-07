@@ -5,9 +5,10 @@ from django.views import View
 
 from apps.shops.models import Shop
 from apps.users.models import UserRole
+from .models import Product
 
 from .forms import ProductForm
-from .models import Product
+from apps.reviews.selectors import get_product_reviews
 
 
 #****************************
@@ -24,10 +25,15 @@ class ProductDetailView(View):
             is_active=True,
         )
 
+        reviews = get_product_reviews(product)
+
         return render(
             request,
             self.template_name,
-            {"product": product},
+            {
+                "product": product,
+                "reviews": reviews,
+            },
         )
 
 
