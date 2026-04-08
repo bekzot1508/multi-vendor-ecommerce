@@ -1,5 +1,6 @@
 from pathlib import Path
 from decouple import config
+from celery.schedules import crontab
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -120,5 +121,14 @@ CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = "Asia/Dubai"
+
+
+
+CELERY_BEAT_SCHEDULE = {
+    "daily-sales-snapshot": {
+        "task": "apps.analytics_app.tasks.generate_daily_sales_snapshot",
+        "schedule": crontab(hour=0, minute=0),
+    },
+}
 
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="no-reply@example.com")

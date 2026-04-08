@@ -20,6 +20,7 @@ urlpatterns = [
     path("payments/", include("apps.payments.urls", namespace="payments")),
     path("notifications/", include("apps.notifications.urls", namespace="notifications")),
     path("shipping/", include("apps.shipping.urls", namespace="shipping")),
+    path("analytics/", include("apps.analytics_app.urls", namespace="analytics")),
 ]
 
 if settings.DEBUG:

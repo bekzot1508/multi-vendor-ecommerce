@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Seller Dashboard{% endblock %}
+
+{% block content %}
+    <h1 class="text-2xl font-bold mb-6">Seller Dashboard</h1>
+
+    <div class="grid grid-cols-2 gap-6">
+    
+        <div class="bg-white shadow rounded p-6">
+          <h3 class="font-semibold">Orders</h3>
+          <p class="text-2xl">{{ metrics.total_orders }}</p>
+        </div>
+
+        <div class="bg-white shadow rounded p-6">
+          <h3 class="font-semibold">Revenue</h3>
+          <p class="text-2xl">${{ metrics.revenue }}</p>
+        </div>
+
+    </div>
+
+    <h2 class="mt-8 text-xl font-semibold">Top Products</h2>
+
+    <ul class="mt-4 space-y-2">
+        {% for p in metrics.top_products %}
+        <li class="bg-white shadow rounded p-3">
+          {{ p.product_name_snapshot }} — {{ p.total_qty }} sold
+        </li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
