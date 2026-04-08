@@ -3,18 +3,89 @@
 {% block title %}Create Shop{% endblock %}
 
 {% block content %}
-  <h1>Create Shop</h1>
 
-  <p>Your shop will stay in pending status until admin approval.</p>
+<div class="min-h-[80vh] flex items-center justify-center px-4 py-12 bg-gradient-to-br from-slate-100 via-indigo-50 to-purple-100">
 
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
+  <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-indigo-100 overflow-hidden">
 
-    <button type="submit">Create Shop</button>
-  </form>
+    <!-- HEADER -->
+    <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 px-8 py-8 text-white">
+      <h1 class="text-3xl font-bold">Create Your Shop</h1>
+      <p class="mt-2 text-indigo-100 text-sm">
+        Your shop will stay in <span class="font-semibold">pending status</span> until admin approval.
+      </p>
+    </div>
 
-  <p>
-    <a href="{% url 'users:profile' %}">← Back to profile</a>
-  </p>
+    <!-- FORM -->
+    <div class="px-8 py-8">
+
+      <form method="post" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <!-- SHOP NAME -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">
+            Shop Name
+          </label>
+          {{ form.name }}
+          {% if form.name.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.name.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- DESCRIPTION -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">
+            Description
+          </label>
+          {{ form.description }}
+          {% if form.description.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.description.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- LOGO -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">
+            Shop Logo
+          </label>
+          {{ form.logo }}
+          {% if form.logo.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ form.logo.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="flex items-center justify-between pt-4">
+
+          <a
+            href="{% url 'users:profile' %}"
+            class="text-sm text-gray-600 hover:text-indigo-600 font-medium"
+          >
+            ← Back to profile
+          </a>
+
+          <button
+            type="submit"
+            class="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold shadow-lg hover:scale-[1.02] transition"
+          >
+            Create Shop
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>
+
 {% endblock %}

@@ -42,13 +42,20 @@ class RegisterForm(UserCreationForm):
                 "focus:outline-none focus:ring-2 focus:ring-blue-500"
             )
 
-class LoginForm(AuthenticationForm):
-    """
-    Default Django login formni ishlatamiz,
-    lekin keyin custom UI uchun override qilish oson.
-    """
 
-    username = forms.CharField(max_length=150)
+class LoginForm(AuthenticationForm):
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={
+            "class": "w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-gray-800 placeholder-gray-400 outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100",
+            "placeholder": "Enter your username",
+        })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            "class": "w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-gray-800 placeholder-gray-400 outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100",
+            "placeholder": "Enter your password",
+        })
+    )
 
 
 class AddressForm(forms.ModelForm):
