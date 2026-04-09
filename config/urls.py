@@ -4,6 +4,8 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path, include
 
+from apps.catalog.views import HomeView
+
 
 def healthcheck_view(request):
     return HttpResponse("OK")
@@ -12,6 +14,8 @@ def healthcheck_view(request):
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("health/", healthcheck_view, name="healthcheck"),
+
+    path("", HomeView.as_view(), name="home"),
     path("users/", include("apps.users.urls", namespace="users")),
     path("shops/", include("apps.shops.urls", namespace="shops")),
     path("", include("apps.catalog.urls", namespace="catalog")),
@@ -21,6 +25,7 @@ urlpatterns = [
     path("notifications/", include("apps.notifications.urls", namespace="notifications")),
     path("shipping/", include("apps.shipping.urls", namespace="shipping")),
     path("analytics/", include("apps.analytics_app.urls", namespace="analytics")),
+    path("inventory/", include("apps.inventory.urls", namespace="inventory")),
 ]
 
 if settings.DEBUG:

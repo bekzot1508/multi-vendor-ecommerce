@@ -10,6 +10,15 @@ from .services import create_user_with_role
 
 
 #*************************
+#   redirect helper
+#*************************
+def redirect_after_login(user):
+    if user.role == "seller":
+        return "users:profile"
+    return "home"
+
+
+#*************************
 #   register views
 #*************************
 class RegisterView(View):
@@ -27,8 +36,8 @@ class RegisterView(View):
 
             login(request, user)
             messages.success(request, "Registration successful.")
-
-            return redirect("users:profile")
+            login(request, user)
+            return redirect(redirect_after_login(user))
 
         return render(request, self.template_name, {"form": form})
 
@@ -51,7 +60,8 @@ class LoginView(View):
             login(request, user)
 
             messages.success(request, "Logged in successfully.")
-            return redirect("users:profile")
+            login(request, user)
+            return redirect(redirect_after_login(user))
 
         return render(request, self.template_name, {"form": form})
 

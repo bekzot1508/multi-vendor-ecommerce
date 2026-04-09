@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Image{% endblock %}
+
+{% block content %}
+  <h1 class="text-2xl font-bold mb-6">Delete Image</h1>
+
+  <div class="bg-white shadow rounded p-6 mb-6">
+    <p><strong>Product:</strong> {{ product.name }}</p>
+
+    <img
+      src="{{ image.image.url }}"
+      alt="{{ image.alt_text }}"
+      class="w-48 h-48 object-cover border rounded mt-4"
+    >
+  </div>
+
+  <form method="post" class="bg-white shadow rounded p-6">
+    {% csrf_token %}
+    <p class="mb-4">Are you sure you want to delete this image?</p>
+
+    <button class="bg-red-600 text-white px-4 py-2 rounded">
+      Yes, delete
+    </button>
+  </form>
+{% endblock %}

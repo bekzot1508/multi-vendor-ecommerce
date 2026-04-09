@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<h1 class="text-3xl font-bold mb-6">
+  Latest Products
+</h1>
+
+{% if products %}
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+{% for product in products %}
+
+<div class="bg-white shadow rounded-lg overflow-hidden">
+
+  {% if product.images.first %}
+  <img
+    src="{{ product.images.first.image.url }}"
+    class="w-full h-48 object-cover"
+  >
+  {% endif %}
+
+  <div class="p-4">
+
+    <h3 class="font-semibold text-lg">
+      {{ product.name }}
+    </h3>
+
+    <p class="text-sm text-gray-600">
+      {{ product.category }}
+    </p>
+
+    <div class="mt-3">
+      <a
+        href="{% url 'catalog:product_detail' product.slug %}"
+        class="text-blue-600 underline"
+      >
+        View product
+      </a>
+    </div>
+
+  </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+<p>No products yet.</p>
+{% endif %}
+
+{% endblock %}

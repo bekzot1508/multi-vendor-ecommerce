@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Product{% endblock %}
+
+{% block content %}
+  <h1 class="text-2xl font-bold mb-6">Manage Product</h1>
+
+  <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+    <p class="text-sm text-blue-800">
+      On this page you manage the full product setup:
+      first add variants, then upload images.
+    </p>
+  </div>
+
+  <div class="bg-white shadow rounded p-6 mb-6">
+    <p><strong>Name:</strong> {{ product.name }}</p>
+    <p><strong>Category:</strong> {{ product.category }}</p>
+    <p><strong>Brand:</strong> {{ product.brand|default:"-" }}</p>
+    <p><strong>Active:</strong> {{ product.is_active }}</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <div class="bg-white shadow rounded p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold">Variants</h2>
+        <a
+          href="{% url 'catalog:seller_variant_create' product.id %}"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+        >
+          + Add Variant
+        </a>
+      </div>
+
+      {% if variants %}
+        <div class="space-y-3">
+          {% for variant in variants %}
+            <div class="border rounded p-4">
+              <p><strong>{{ variant.name }}</strong></p>
+              <p>SKU: {{ variant.sku }}</p>
+              <p>Price: ${{ variant.price }}</p>
+              <p>Compare at: {{ variant.compare_at_price|default:"-" }}</p>
+              <p>Active: {{ variant.is_active }}</p>
+
+              {% if variant.inventory %}
+                <div class="mt-2 text-sm text-gray-600">
+                  <p>Total stock: {{ variant.inventory.total_stock }}</p>
+                  <p>Reserved stock: {{ variant.inventory.reserved_stock }}</p>
+                  <p>Low stock threshold: {{ variant.inventory.low_stock_threshold }}</p>
+                </div>
+              {% endif %}
+
+              <div class="mt-3">
+                <a href="{% url 'catalog:seller_variant_edit' variant.id %}" class="text-blue-600 underline">Edit</a>
+                |
+                <a href="{% url 'inventory:seller_manage' variant.id %}" class="text-indigo-600 underline">Inventory</a>
+                |
+                <a href="{% url 'catalog:seller_variant_delete' variant.id %}" class="text-red-600 underline">Delete</a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>No variants yet.</p>
+      {% endif %}
+    </div>
+
+    <div class="bg-white shadow rounded p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold">Images</h2>
+        <a
+          href="{% url 'catalog:seller_image_create' product.id %}"
+          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+        >
+          + Add Image
+        </a>
+      </div>
+
+      {% if images %}
+        <div class="space-y-4">
+          {% for image in images %}
+            <div class="border rounded p-4">
+              <img
+                src="{{ image.image.url }}"
+                alt="{{ image.alt_text }}"
+                class="w-40 h-40 object-cover border rounded mb-3"
+              >
+
+              <p>Alt text: {{ image.alt_text|default:"-" }}</p>
+              <p>Primary: {{ image.is_primary }}</p>
+              <p>Sort order: {{ image.sort_order }}</p>
+
+              <div class="mt-3">
+                <a href="{% url 'catalog:seller_image_delete' image.id %}" class="text-red-600 underline">Delete</a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>No images yet.</p>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <div class="mt-6">
+    <a href="{% url 'catalog:seller_product_list' %}" class="text-blue-600 underline">
+      ← Back to products
+    </a>
+  </div>
+{% endblock %}
