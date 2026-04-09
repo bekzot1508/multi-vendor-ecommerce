@@ -7,7 +7,7 @@
     Order {{ order.order_number }}
   </h1>
 
-  <p>Status: {{ order.status }}</p>
+  <p>Order Status: {{ order.status }}</p>
   <p>Total: ${{ order.total_amount }}</p>
 
   <h3 class="mt-6 font-semibold">Items</h3>
@@ -19,6 +19,10 @@
         {{ item.variant_name_snapshot }}
         x {{ item.quantity }}
         = ${{ item.line_total }}
+
+        <div class="mb-3 text-sm text-gray-600">
+          Item status: {{ item.status }}
+        </div>
 
         {% if item.status == "delivered" %}
         <div class="mt-2">
@@ -38,14 +42,16 @@
     {% endfor %}
   </ul>
 
-  {% if order.shipment %}
+ {% if order.shipment and order.status != "awaiting_payment" and order.status != "payment_failed" and order.status != "cancelled" %}
     <div class="mt-6">
       <a
         href="{% url 'shipping:detail' order.shipment.id %}"
-        class="text-blue-600 underline"
+        class="p-2 text-blue-600 underline"
       >
         View Shipment
       </a>
+      |
+      <a href="{% url 'orders:list' %}" class="p-2 text-blue-600 underline">My Orders</a>
     </div>
   {% endif %}
 

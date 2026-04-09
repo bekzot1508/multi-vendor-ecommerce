@@ -11,36 +11,50 @@
     <p><strong>Variant:</strong> {{ item.variant_name_snapshot }}</p>
     <p><strong>SKU:</strong> {{ item.sku_snapshot }}</p>
     <p><strong>Quantity:</strong> {{ item.quantity }}</p>
-    <p><strong>Status:</strong> {{ item.status }}</p>
+    <p><strong>Item Status:</strong> {{ item.status }}</p>
     <p><strong>Total:</strong> ${{ item.line_total }}</p>
   </div>
 
   <div class="mt-6 bg-white shadow rounded p-6">
     <h2 class="text-lg font-semibold mb-4">Update Status</h2>
 
-    <form method="post" action="{% url 'orders:seller_item_status' item.id %}">
-      {% csrf_token %}
+    {% if item.order.status == "paid" or item.order.status == "processing" or item.order.status == "shipped" %}
+      {% if item.status != "cancelled" and item.status != "delivered" %}
+        <form method="post" action="{% url 'orders:seller_item_status' item.id %}">
+          {% csrf_token %}
 
-      <select name="status" class="border p-2 rounded w-full mb-4">
-        <option value="processing">Processing</option>
-        <option value="packed">Packed</option>
-        <option value="shipped">Shipped</option>
-        <option value="delivered">Delivered</option>
-      </select>
+          <select name="status" class="border p-2 rounded w-full mb-4">
+            <option value="processing">Processing</option>
+            <option value="packed">Packed</option>
+            <option value="shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+          </select>
 
-      <button class="bg-blue-600 text-white px-4 py-2 rounded">
-        Update Status
-      </button>
-    </form>
+          <button class="bg-blue-600 text-white px-4 py-2 rounded">
+            Update Item Status
+          </button>
+        </form>
+      {% else %}
+        <p class="text-gray-600">This item can no longer be updated.</p>
+      {% endif %}
+    {% else %}
+      <p class="text-red-600">
+        This order item cannot be updated because the payment was not completed or the order is closed.
+      </p>
+    {% endif %}
   </div>
 
-  {% if item.order.shipment %}
+  {% if item.order.shipment and item.order.status != "awaiting_payment" and item.order.status != "payment_failed" and item.order.status != "cancelled" %}
     <div class="mt-6">
       <a
         href="{% url 'shipping:seller_detail' item.order.shipment.id %}"
-        class="text-blue-600 underline"
+        class="p-2 text-blue-600 underline"
       >
         Manage Shipment
+      </a>
+      |
+      <a href="{% url 'orders:seller_item_list' %}" class="p-2 text-blue-600 underline">
+        Manage Seller Orders
       </a>
     </div>
   {% endif %}

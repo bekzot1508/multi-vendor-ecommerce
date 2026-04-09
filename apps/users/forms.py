@@ -62,3 +62,49 @@ class AddressForm(forms.ModelForm):
     class Meta:
         model = Address
         exclude = ("user",)
+
+        widgets = {
+            "full_name": forms.TextInput(attrs={
+                "class": "w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200",
+                "placeholder": "Full name"
+            }),
+
+            "phone": forms.TextInput(attrs={
+                "class": "w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200",
+                "placeholder": "+998..."
+            }),
+
+            "country": forms.TextInput(attrs={
+                "class": "w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200",
+            }),
+
+            "city": forms.TextInput(attrs={
+                "class": "w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200",
+            }),
+
+            "area": forms.TextInput(attrs={
+                "class": "w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200",
+            }),
+
+            "line1": forms.TextInput(attrs={
+                "class": "w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200",
+                "placeholder": "Street address"
+            }),
+
+            "line2": forms.TextInput(attrs={
+                "class": "w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200",
+                "placeholder": "Apartment, suite, etc."
+            }),
+
+            "postal_code": forms.TextInput(attrs={
+                "class": "w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200",
+            }),
+
+            "is_default_shipping": forms.CheckboxInput(attrs={
+                "class": "h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+            }),
+
+            "is_default_billing": forms.CheckboxInput(attrs={
+                "class": "h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+            }),
+        }

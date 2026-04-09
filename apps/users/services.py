@@ -28,3 +28,12 @@ def create_user_with_role(form):
 
     user.save()
     return user
+
+
+#*************************
+#   redirect helper
+#*************************
+def redirect_after_login(user):
+    if user.role == "seller":
+        return "users:profile"
+    return "home"

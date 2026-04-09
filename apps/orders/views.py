@@ -123,12 +123,6 @@ class SellerOrderItemDetailView(LoginRequiredMixin, View):
             messages.error(request, "Only sellers can access this page.")
             return redirect("users:profile")
 
-        # item = get_object_or_404(
-        #     OrderItem.objects.select_related("order", "product", "variant", "shop"),
-        #     id=item_id,
-        #     shop__owner=request.user,
-        # )
-
         item = get_object_or_404(
             OrderItem.objects.select_related("order", "order__shipment", "product", "variant", "shop"),
             id=item_id,

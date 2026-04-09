@@ -4,7 +4,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from apps.inventory.services import finalize_reserved_stock, release_reserved_stock
-from apps.orders.models import Order, OrderStatusHistory
+from apps.orders.models import Order,OrderItem, OrderStatusHistory
 from apps.notifications.tasks import (
     create_order_notification_task,
     create_payment_failed_notification_task,
@@ -134,11 +134,14 @@ def process_mock_payment_callback(payment, callback_id, action, raw_payload=None
             Payment.Status.CANCELLED if action == "cancel" else Payment.Status.FAILED
         )
 
-        if locked_payment.status not in [Payment.Status.SUCCESS, target_payment_status]:
+        if locked_payment.status == Payment.Status.SUCCESS:
+            return locked_payment
+
+        if locked_payment.status != target_payment_status:
             locked_payment.status = target_payment_status
             locked_payment.save(update_fields=["status", "updated_at"])
 
-        if order.status not in [Order.Status.PAID, Order.Status.PAYMENT_FAILED]:
+        if order.status != Order.Status.PAYMENT_FAILED:
             old_status = order.status
             order.status = Order.Status.PAYMENT_FAILED
             order.save(update_fields=["status", "updated_at"])
@@ -152,6 +155,11 @@ def process_mock_payment_callback(payment, callback_id, action, raw_payload=None
 
             for item in order.items.select_related("variant"):
                 release_reserved_stock(item.variant, item.quantity)
+
+                # Seller endi bu itemni process qila olmasligi kerak
+                if item.status != OrderItem.Status.CANCELLED:
+                    item.status = OrderItem.Status.CANCELLED
+                    item.save(update_fields=["status", "updated_at"])
 
         PaymentTransaction.objects.create(
             payment=locked_payment,

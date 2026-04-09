@@ -24,6 +24,7 @@ urlpatterns = [
     path("payments/", include("apps.payments.urls", namespace="payments")),
     path("notifications/", include("apps.notifications.urls", namespace="notifications")),
     path("shipping/", include("apps.shipping.urls", namespace="shipping")),
+    path("reviews/", include("apps.reviews.urls", namespace="reviews")),
     path("analytics/", include("apps.analytics_app.urls", namespace="analytics")),
     path("inventory/", include("apps.inventory.urls", namespace="inventory")),
 ]

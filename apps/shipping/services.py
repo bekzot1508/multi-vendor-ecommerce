@@ -30,6 +30,15 @@ def create_shipment_for_order(*, order, shipping_method):
 #********************************
 @transaction.atomic
 def update_shipment_status(*, shipment, changed_by, new_status):
+    order = shipment.order
+
+    if order.status in [
+        Order.Status.AWAITING_PAYMENT,
+        Order.Status.PAYMENT_FAILED,
+        Order.Status.CANCELLED,
+    ]:
+        raise ValueError("Shipment cannot be updated because payment is not completed or the order is closed")
+
     allowed_statuses = {
         Shipment.Status.PENDING,
         Shipment.Status.PACKED,

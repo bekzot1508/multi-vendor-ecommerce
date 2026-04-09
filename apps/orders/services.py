@@ -92,6 +92,21 @@ def update_seller_order_item_status(*, seller_user, order_item, new_status):
     if order_item.shop.owner_id != seller_user.id:
         raise ValueError("You cannot manage this order item")
 
+    # Payment qilinmagan yoki payment failed/cancel bo'lgan orderlarni seller boshqarmaydi
+    if order_item.order.status in [
+        Order.Status.AWAITING_PAYMENT,
+        Order.Status.PAYMENT_FAILED,
+        Order.Status.CANCELLED,
+    ]:
+        raise ValueError("This order item cannot be updated because payment is not completed")
+
+    # Cancelled item qayta update qilinmaydi
+    if order_item.status == OrderItem.Status.CANCELLED:
+        raise ValueError("Cancelled order item cannot be updated")
+
+    if order_item.shop.owner_id != seller_user.id:
+        raise ValueError("You cannot manage this order item")
+
     allowed_statuses = {
         OrderItem.Status.PROCESSING,
         OrderItem.Status.PACKED,

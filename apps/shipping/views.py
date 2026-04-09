@@ -23,6 +23,10 @@ class ShipmentDetailView(LoginRequiredMixin, View):
             order__user=request.user,
         )
 
+        if shipment.order.status in ["awaiting_payment", "payment_failed", "cancelled"]:
+            messages.error(request, "Shipment is not available for this order.")
+            return redirect("orders:detail", order_id=shipment.order.id)
+
         return render(request, self.template_name, {"shipment": shipment})
 
 
@@ -38,10 +42,15 @@ class SellerShipmentDetailView(LoginRequiredMixin, View):
             return redirect("users:profile")
 
         shipment = get_object_or_404(
-            Shipment.objects.select_related("order", "shipping_method"),
+            Shipment.objects.select_related("order", "shipping_method")
+            .filter(order__items__shop__owner=request.user)
+            .distinct(),
             id=shipment_id,
-            order__items__shop__owner=request.user,
         )
+
+        if shipment.order.status in ["awaiting_payment", "payment_failed", "cancelled"]:
+            messages.error(request, "Shipment is not manageable because payment was not completed.")
+            return redirect("orders:seller_item_list")
 
         return render(request, self.template_name, {"shipment": shipment})
 
@@ -56,9 +65,10 @@ class SellerShipmentStatusUpdateView(LoginRequiredMixin, View):
             return redirect("users:profile")
 
         shipment = get_object_or_404(
-            Shipment.objects.select_related("order"),
+            Shipment.objects.select_related("order")
+            .filter(order__items__shop__owner=request.user)
+            .distinct(),
             id=shipment_id,
-            order__items__shop__owner=request.user,
         )
 
         new_status = request.POST.get("status")

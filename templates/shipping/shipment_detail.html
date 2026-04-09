@@ -3,14 +3,26 @@
 {% block title %}Shipment {{ shipment.tracking_code }}{% endblock %}
 
 {% block content %}
-<h1 class="text-2xl font-bold mb-4">Shipment Details</h1>
+  <h1 class="text-2xl font-bold mb-4">Shipment Details</h1>
 
-<div class="bg-white shadow rounded p-6 space-y-2">
-  <p><strong>Order:</strong> {{ shipment.order.order_number }}</p>
-  <p><strong>Tracking code:</strong> {{ shipment.tracking_code }}</p>
-  <p><strong>Method:</strong> {{ shipment.shipping_method.name }}</p>
-  <p><strong>Status:</strong> {{ shipment.status }}</p>
-  <p><strong>Shipped at:</strong> {{ shipment.shipped_at|default:"-" }}</p>
-  <p><strong>Delivered at:</strong> {{ shipment.delivered_at|default:"-" }}</p>
-</div>
+  <div class="bg-white shadow rounded p-6 space-y-2">
+    <p><strong>Order:</strong> {{ shipment.order.order_number }}</p>
+    <p><strong>Tracking code:</strong> {{ shipment.tracking_code }}</p>
+    <p><strong>Method:</strong> {{ shipment.shipping_method.name }}</p>
+    <p><strong>shipment Status:</strong>  {{ shipment.status }}</p>
+    <p><strong>Shipped at:</strong> {{ shipment.shipped_at|default:"-" }}</p>
+    <p><strong>Delivered at:</strong> {{ shipment.delivered_at|default:"-" }}</p>
+  </div>
+
+  <div class="p-3">
+      <a
+      href="{% url 'orders:detail' shipment.order.id %}"
+      class="p-2 text-blue-600 underline"
+      >
+        Order Details
+      </a>
+      |
+      <a href="{% url 'orders:list' %}" class="p-2 text-blue-600 underline">My Orders</a>
+  </div>
+
 {% endblock %}
