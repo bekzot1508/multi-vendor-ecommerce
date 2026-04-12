@@ -1,3 +1,4 @@
+from django.db import models
 from django.db.models import Count, Sum
 
 from apps.inventory.models import InventoryRecord
@@ -37,6 +38,11 @@ def get_admin_dashboard_metrics():
 #********************************
 #   Seller dashboard metrics
 #********************************
+from django.db.models import Sum
+
+from apps.orders.models import Order, OrderItem
+
+
 def get_seller_dashboard_metrics(user):
     seller_items = OrderItem.objects.filter(shop__owner=user)
 
@@ -49,19 +55,27 @@ def get_seller_dashboard_metrics(user):
         or 0
     )
 
+    total_units_sold = (
+        seller_items
+        .filter(order__status=Order.Status.PAID)
+        .aggregate(total=Sum("quantity"))["total"]
+        or 0
+    )
+
     top_products = (
         seller_items
+        .filter(order__status=Order.Status.PAID)
         .values("product_name_snapshot")
-        .annotate(total_qty=Sum("quantity"))
+        .annotate(total_qty=Sum("quantity"), total_amount=Sum("line_total"))
         .order_by("-total_qty")[:5]
     )
 
     return {
         "total_orders": total_orders,
         "revenue": revenue,
+        "total_units_sold": total_units_sold,
         "top_products": top_products,
     }
-
 
 
 #********************************
@@ -73,6 +87,37 @@ def get_low_stock_products():
         .select_related("variant__product")
         .filter(total_stock__lte=models.F("low_stock_threshold"))
     )
+
+
+#********************************
+#   Seller Sales
+#********************************
+def get_seller_sales(user, start_date=None, end_date=None):
+    queryset = OrderItem.objects.filter(
+        shop__owner=user,
+        order__status=Order.Status.PAID,
+    )
+
+    if start_date:
+        queryset = queryset.filter(order__created_at__date__gte=start_date)
+
+    if end_date:
+        queryset = queryset.filter(order__created_at__date__lte=end_date)
+
+    revenue = queryset.aggregate(total=Sum("line_total"))["total"] or 0
+
+    units = queryset.aggregate(total=Sum("quantity"))["total"] or 0
+
+    orders = queryset.values("order").distinct().count()
+
+    items = queryset.select_related("order")
+
+    return {
+        "revenue": revenue,
+        "units": units,
+        "orders": orders,
+        "items": items,
+    }
 
 
 

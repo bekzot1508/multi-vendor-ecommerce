@@ -5,7 +5,7 @@
   <div class="max-w-6xl mx-auto px-4 py-10">
 
     <!-- manage product -->
-    {% if request.user.role == "seller" %}
+    {% if request.user.role == "seller" and product.shop.owner == request.user %}
       <a href="{% url 'catalog:seller_product_list' %}"
          class="block px-4 py-2 bg-purple-600 text-white text-lg font-bold rounded hover:bg-purple-700">
          Manage products
@@ -47,6 +47,9 @@
 
               <p class="text-blue-600 text-xl font-bold mt-1">
                 ${{ v.price }}
+              </p>
+              <p class="text-blue-600 text-xl font-bold mt-1 line-through">
+                ${{ v.compare_at_price }}
               </p>
             </div>
 

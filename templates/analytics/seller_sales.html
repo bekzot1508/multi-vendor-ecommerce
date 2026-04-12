@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Seller Sales{% endblock %}
+
+{% block content %}
+
+    <h1 class="text-2xl font-bold mb-6">
+         Seller Sales
+    </h1>
+
+    <div class="bg-white shadow rounded p-6 mb-6">
+
+        <form method="get" class="flex gap-4">
+
+            <input
+                type="date"
+                name="start"
+                value="{{ start }}"
+                class="border p-2 rounded"
+            >
+
+            <input
+                type="date"
+                name="end"
+                value="{{ end }}"
+                class="border p-2 rounded"
+            >
+
+            <button class="bg-blue-600 text-white px-4 py-2 rounded">
+                Filter
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <div class="grid grid-cols-3 gap-6 mb-8">
+
+    <div class="bg-white shadow rounded p-6">
+    <p class="text-sm text-gray-500">Revenue</p>
+    <p class="text-2xl font-bold">${{ sales.revenue }}</p>
+    </div>
+
+    <div class="bg-white shadow rounded p-6">
+    <p class="text-sm text-gray-500">Units sold</p>
+    <p class="text-2xl font-bold">{{ sales.units }}</p>
+    </div>
+
+    <div class="bg-white shadow rounded p-6">
+    <p class="text-sm text-gray-500">Orders</p>
+    <p class="text-2xl font-bold">{{ sales.orders }}</p>
+    </div>
+
+    </div>
+
+
+    <div class="bg-white shadow rounded p-6">
+
+    <h2 class="text-xl font-semibold mb-4">
+    Sales items
+    </h2>
+
+        <table class="min-w-full">
+
+            <thead>
+                <tr>
+                <th class="p-2 text-left">Order</th>
+                <th class="p-2 text-left">Product</th>
+                <th class="p-2 text-left">Qty</th>
+                <th class="p-2 text-left">Amount</th>
+                <th class="p-2 text-left">Date</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for item in sales.items %}
+
+                    <tr class="border-t">
+
+                    <td class="p-2">
+                    {{ item.order.order_number }}
+                    </td>
+
+                    <td class="p-2">
+                    {{ item.product_name_snapshot }}
+                    </td>
+
+                    <td class="p-2">
+                    {{ item.quantity }}
+                    </td>
+
+                    <td class="p-2">
+                    ${{ item.line_total }}
+                    </td>
+
+                    <td class="p-2">
+                    {{ item.order.created_at }}
+                    </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+                    <td colspan="5" class="p-4 text-center text-gray-500">
+                    No sales yet
+                    </td>
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+{% endblock %}

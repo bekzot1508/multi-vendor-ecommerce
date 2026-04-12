@@ -20,6 +20,7 @@
 
     <div class="space-x-4">
       <a href="{% url 'admin:index' %}">Admin</a>
+      <a href="{% url 'analytics:admin_dashboard' %}">Admin dashboard</a>
       {% if request.user.is_authenticated %}
         {% if request.user.role != "seller" %}
           <a href="{% url 'cart:detail' %}">Cart</a>

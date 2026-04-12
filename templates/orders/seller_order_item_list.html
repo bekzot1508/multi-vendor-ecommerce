@@ -16,6 +16,7 @@
       <th class="p-3 text-left">Item Status</th>
       <th class="p-3 text-left">Total</th>
       <th class="p-3 text-left">Order Status</th>
+      <th class="p-3 text-left">Seller Amount</th>
       <th class="p-3"></th>
     </tr>
   </thead>
@@ -29,6 +30,7 @@
         <td class="p-3">{{ item.status }}</td>
         <td class="p-3">${{ item.line_total }}</td>
         <td class="p-3">{{ item.order.status }}</td>
+        <td class="p-3">${{ item.line_total }}</td>
         <td class="p-3">
           <a href="{% url 'orders:seller_item_detail' item.id %}" class="text-blue-600 underline">
             View

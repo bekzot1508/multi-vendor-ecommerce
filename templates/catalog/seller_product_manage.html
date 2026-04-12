@@ -39,7 +39,7 @@
               <p><strong>{{ variant.name }}</strong></p>
               <p>SKU: {{ variant.sku }}</p>
               <p>Price: ${{ variant.price }}</p>
-              <p>Compare at: {{ variant.compare_at_price|default:"-" }}</p>
+              <p>Compare at: ${{ variant.compare_at_price|default:"-" }}</p>
               <p>Active: {{ variant.is_active }}</p>
 
               {% if variant.inventory %}
