@@ -1,0 +1,63 @@
+{% extends "backoffice/base.html" %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Notifications</h1>
+
+<form method="get" class="bg-white shadow rounded p-4 mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+  <input
+    type="text"
+    name="search"
+    value="{{ search|default:'' }}"
+    placeholder="Search by user, title, message"
+    class="border rounded px-3 py-2"
+  >
+
+  <select name="type" class="border rounded px-3 py-2">
+    <option value="">All types</option>
+    <option value="order" {% if type == "order" %}selected{% endif %}>Order</option>
+    <option value="payment" {% if type == "payment" %}selected{% endif %}>Payment</option>
+    <option value="stock" {% if type == "stock" %}selected{% endif %}>Stock</option>
+  </select>
+
+  <select name="is_read" class="border rounded px-3 py-2">
+    <option value="">All statuses</option>
+    <option value="true" {% if is_read == "true" %}selected{% endif %}>Read</option>
+    <option value="false" {% if is_read == "false" %}selected{% endif %}>Unread</option>
+  </select>
+
+  <button class="bg-blue-600 text-white px-4 py-2 rounded">Filter</button>
+</form>
+
+<table class="min-w-full bg-white shadow rounded">
+  <thead>
+    <tr>
+      <th class="p-3 text-left">User</th>
+      <th class="p-3 text-left">Title</th>
+      <th class="p-3 text-left">Type</th>
+      <th class="p-3 text-left">Read</th>
+      <th class="p-3 text-left">Date</th>
+      <th class="p-3 text-left">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for obj in page_obj %}
+      <tr class="border-t">
+        <td class="p-3">{{ obj.user.email }}</td>
+        <td class="p-3">{{ obj.title }}</td>
+        <td class="p-3">{{ obj.type }}</td>
+        <td class="p-3">{{ obj.is_read }}</td>
+        <td class="p-3">{{ obj.created_at }}</td>
+        <td class="p-3">
+          <a href="{% url 'backoffice:notification_detail' obj.id %}" class="text-blue-600 underline">View</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6" class="p-4 text-center text-gray-500">No notifications</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% include "backoffice/_pagination.html" %}
+{% endblock %}

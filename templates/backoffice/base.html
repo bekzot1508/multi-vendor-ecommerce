@@ -1,0 +1,55 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Backoffice{% endblock %}</title>
+    {% tailwind_css %}
+  </head>
+  <body class="bg-gray-100 text-gray-900">
+
+  <div class="min-h-screen flex">
+
+    <aside class="w-72 bg-slate-900 text-white p-6">
+      <h1 class="text-2xl font-bold mb-8">Backoffice</h1>
+
+      <nav class="space-y-3 text-sm">
+        <a href="{% url 'backoffice:dashboard' %}" class="block hover:text-blue-300">Dashboard</a>
+        <a href="{% url 'backoffice:user_list' %}" class="block hover:text-blue-300">Users</a>
+        <a href="{% url 'backoffice:product_list' %}" class="block hover:text-blue-300">Products</a>
+        <a href="{% url 'backoffice:seller_approvals' %}" class="block hover:text-blue-300">Seller Approvals</a>
+        <a href="{% url 'backoffice:shops' %}" class="block hover:text-blue-300">Shops</a>
+        <a href="{% url 'backoffice:category_list' %}" class="block hover:text-blue-300">Categories</a>
+        <a href="{% url 'backoffice:brand_list' %}" class="block hover:text-blue-300">Brands</a>
+        <a href="{% url 'backoffice:order_list' %}" class="block hover:text-blue-300">Orders</a>
+        <a href="{% url 'backoffice:payment_list' %}" class="block hover:text-blue-300">Payments</a>
+        <a href="{% url 'backoffice:coupon_list' %}" class="block hover:text-blue-300">Coupons</a>
+        <a href="{% url 'backoffice:shipping_method_list' %}" class="block hover:text-blue-300">Shipping</a>
+        <a href="{% url 'backoffice:low_stock_list' %}" class="block hover:text-blue-300">Inventory</a>
+        <a href="{% url 'backoffice:payout_list' %}" class="block hover:text-blue-300">Payouts</a>
+        <a href="{% url 'backoffice:notification_list' %}" class="block hover:text-blue-300">Notifications</a>
+        <a href="{% url 'backoffice:email_log_list' %}" class="block hover:text-blue-300">Email Logs</a>
+
+        <a href="{% url 'home' %}" class="block hover:text-blue-300 mt-8">← Back to site</a>
+      </nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+      {% if messages %}
+        <div class="space-y-3 mb-6">
+          {% for message in messages %}
+            <div class="bg-white border rounded-lg px-4 py-3 shadow-sm">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+
+  </div>
+
+  </body>
+</html>

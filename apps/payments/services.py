@@ -6,9 +6,10 @@ from django.utils import timezone
 from apps.inventory.services import finalize_reserved_stock, release_reserved_stock
 from apps.orders.models import Order,OrderItem, OrderStatusHistory
 from apps.notifications.tasks import (
-    create_order_notification_task,
     create_payment_failed_notification_task,
     create_payment_success_notification_task,
+    send_payment_success_email,
+    send_payment_failed_email,
 )
 
 from .models import Payment, PaymentCallbackLog, PaymentTransaction
@@ -127,6 +128,8 @@ def process_mock_payment_callback(payment, callback_id, action, raw_payload=None
         callback_log.save(update_fields=["processed", "processed_at", "updated_at"])
 
         create_payment_success_notification_task.delay(order.id)
+        send_payment_success_email.delay(payment.order.user.email, payment.order.order_number)
+
         return locked_payment
 
     if action in ["fail", "cancel"]:
@@ -178,6 +181,8 @@ def process_mock_payment_callback(payment, callback_id, action, raw_payload=None
         callback_log.save(update_fields=["processed", "processed_at", "updated_at"])
 
         create_payment_failed_notification_task.delay(order.id)
+        send_payment_failed_email.delay(payment.order.user.email, payment.order.order_number)
+
         return locked_payment
 
     raise ValueError("Invalid payment action")

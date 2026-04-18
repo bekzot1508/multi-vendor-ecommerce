@@ -1,0 +1,74 @@
+{% extends "backoffice/base.html" %}
+
+{% block title %}Seller Approvals{% endblock %}
+
+{% block content %}
+
+    <h1 class="text-2xl font-bold mb-6">
+       Seller Approvals
+    </h1>
+
+    <table class="min-w-full bg-white shadow rounded">
+
+        <thead>
+            <tr>
+                <th class="p-3 text-left">User</th>
+                <th class="p-3 text-left">Email</th>
+                <th class="p-3 text-left">Phone</th>
+                <th class="p-3 text-left">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for profile in profiles %}
+
+                <tr class="border-t">
+
+                    <td class="p-3">
+                        {{ profile.user.full_name }}
+                    </td>
+
+                    <td class="p-3">
+                        {{ profile.user.email }}
+                    </td>
+
+                    <td class="p-3">
+                        {{ profile.phone }}
+                    </td>
+
+                    <td class="p-3 flex gap-3">
+
+                        <form method="post" action="{% url 'backoffice:approve_seller' profile.id %}">
+                            {% csrf_token %}
+                            <button class="bg-green-600 text-white px-3 py-1 rounded">
+                                Approve
+                            </button>
+                        </form>
+
+                        <form method="post" action="{% url 'backoffice:reject_seller' profile.id %}">
+                            {% csrf_token %}
+                            <button class="bg-red-600 text-white px-3 py-1 rounded">
+                                Reject
+                            </button>
+                        </form>
+
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+                    <td colspan="4" class="p-4 text-center text-gray-500">
+                       No pending sellers
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+{% endblock %}

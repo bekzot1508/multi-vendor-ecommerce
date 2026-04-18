@@ -27,6 +27,8 @@ urlpatterns = [
     path("reviews/", include("apps.reviews.urls", namespace="reviews")),
     path("analytics/", include("apps.analytics_app.urls", namespace="analytics")),
     path("inventory/", include("apps.inventory.urls", namespace="inventory")),
+    path("payouts/", include("apps.payouts.urls", namespace="payouts")),
+    path("backoffice/", include("apps.backoffice.urls", namespace="backoffice")),
 ]
 
 if settings.DEBUG:

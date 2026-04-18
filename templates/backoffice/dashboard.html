@@ -1,0 +1,74 @@
+{% extends "backoffice/base.html" %}
+
+{% block title %}Backoffice Dashboard{% endblock %}
+
+{% block content %}
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold">Backoffice Dashboard</h1>
+    <p class="text-gray-600 mt-2">Operational control center for the whole marketplace.</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+
+    <div class="bg-white shadow rounded-2xl p-6">
+      <p class="text-sm text-gray-500">Total Users</p>
+      <p class="text-3xl font-bold mt-2">{{ metrics.total_users }}</p>
+    </div>
+
+    <div class="bg-white shadow rounded-2xl p-6">
+      <p class="text-sm text-gray-500">Customers</p>
+      <p class="text-3xl font-bold mt-2">{{ metrics.total_customers }}</p>
+    </div>
+
+    <div class="bg-white shadow rounded-2xl p-6">
+      <p class="text-sm text-gray-500">Sellers</p>
+      <p class="text-3xl font-bold mt-2">{{ metrics.total_sellers }}</p>
+    </div>
+
+    <div class="bg-white shadow rounded-2xl p-6">
+      <p class="text-sm text-gray-500">Pending Seller Approvals</p>
+      <p class="text-3xl font-bold mt-2">{{ metrics.pending_seller_profiles }}</p>
+    </div>
+
+    <div class="bg-white shadow rounded-2xl p-6">
+      <p class="text-sm text-gray-500">Total Shops</p>
+      <p class="text-3xl font-bold mt-2">{{ metrics.total_shops }}</p>
+    </div>
+
+    <div class="bg-white shadow rounded-2xl p-6">
+      <p class="text-sm text-gray-500">Pending Shops</p>
+      <p class="text-3xl font-bold mt-2">{{ metrics.pending_shops }}</p>
+    </div>
+
+    <div class="bg-white shadow rounded-2xl p-6">
+      <p class="text-sm text-gray-500">Paid Orders</p>
+      <p class="text-3xl font-bold mt-2">{{ metrics.paid_orders }}</p>
+    </div>
+
+    <div class="bg-white shadow rounded-2xl p-6">
+      <p class="text-sm text-gray-500">Payment Failed Orders</p>
+      <p class="text-3xl font-bold mt-2">{{ metrics.payment_failed_orders }}</p>
+    </div>
+
+    <div class="bg-white shadow rounded-2xl p-6">
+      <p class="text-sm text-gray-500">Today Revenue</p>
+      <p class="text-3xl font-bold mt-2">${{ metrics.today_revenue }}</p>
+    </div>
+
+    <div class="bg-white shadow rounded-2xl p-6">
+      <p class="text-sm text-gray-500">Low Stock Products</p>
+      <p class="text-3xl font-bold mt-2">{{ metrics.low_stock_count }}</p>
+    </div>
+
+    <div class="bg-white shadow rounded-2xl p-6">
+      <p class="text-sm text-gray-500">Pending Payouts</p>
+      <p class="text-3xl font-bold mt-2">{{ metrics.pending_payouts }}</p>
+    </div>
+
+    <div class="bg-white shadow rounded-2xl p-6">
+      <p class="text-sm text-gray-500">Successful / Failed Payments</p>
+      <p class="text-xl font-bold mt-2">{{ metrics.successful_payments }} / {{ metrics.failed_payments }}</p>
+    </div>
+
+  </div>
+{% endblock %}

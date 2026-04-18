@@ -31,6 +31,7 @@ class Notification(TimeStampedModel):
 #   EmailLog model
 #**********************
 class EmailLog(TimeStampedModel):
+
     class Status(models.TextChoices):
         PENDING = "pending", "Pending"
         SENT = "sent", "Sent"
@@ -39,8 +40,8 @@ class EmailLog(TimeStampedModel):
     to_email = models.EmailField()
     subject = models.CharField(max_length=255)
     body = models.TextField()
-    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING,)
     error_message = models.TextField(blank=True)
 
     def __str__(self):
-        return self.subject
+        return f"{self.to_email} | {self.status}"

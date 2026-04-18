@@ -20,6 +20,9 @@ class ShopCreateView(LoginRequiredMixin, View):
         if request.user.role != UserRole.SELLER:
             messages.error(request, "Only sellers can create shops.")
             return redirect("users:profile")
+        elif request.user.seller_profile.is_approved == False:
+            messages.error(request, "You are not approved to create Shop.")
+            return redirect("users:profile")
 
         return super().dispatch(request, *args, **kwargs)
 

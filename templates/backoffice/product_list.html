@@ -1,0 +1,70 @@
+{% extends "backoffice/base.html" %}
+
+{% block title %}Products{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Products</h1>
+
+<form method="get" class="bg-white shadow rounded p-4 mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+  <input
+    type="text"
+    name="search"
+    value="{{ search|default:'' }}"
+    placeholder="Search by product, slug, shop"
+    class="border rounded px-3 py-2"
+  >
+
+  <select name="is_active" class="border rounded px-3 py-2">
+    <option value="">All statuses</option>
+    <option value="true" {% if is_active == "true" %}selected{% endif %}>Active</option>
+    <option value="false" {% if is_active == "false" %}selected{% endif %}>Inactive</option>
+  </select>
+
+  <button class="bg-blue-600 text-white px-4 py-2 rounded">Filter</button>
+</form>
+
+<table class="min-w-full bg-white shadow rounded">
+  <thead>
+    <tr>
+      <th class="p-3 text-left">Name</th>
+      <th class="p-3 text-left">Shop</th>
+      <th class="p-3 text-left">Category</th>
+      <th class="p-3 text-left">Brand</th>
+      <th class="p-3 text-left">Active</th>
+      <th class="p-3 text-left">Date</th>
+      <th class="p-3 text-left">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for obj in page_obj %}
+      <tr class="border-t">
+        <td class="p-3">{{ obj.name }}</td>
+        <td class="p-3">{{ obj.shop.name }}</td>
+        <td class="p-3">{{ obj.category }}</td>
+        <td class="p-3">{{ obj.brand|default:"-" }}</td>
+        <td class="p-3">{{ obj.is_active }}</td>
+        <td class="p-3">{{ obj.created_at }}</td>
+        <td class="p-3 flex gap-2">
+          <a href="{% url 'backoffice:product_detail' obj.id %}" class="text-blue-600 underline">View</a>
+
+          {% if obj.is_active %}
+            <form method="post" action="{% url 'backoffice:product_deactivate' obj.id %}">
+              {% csrf_token %}
+              <button class="bg-red-600 text-white px-3 py-1 rounded">Deactivate</button>
+            </form>
+          {% else %}
+            <form method="post" action="{% url 'backoffice:product_activate' obj.id %}">
+              {% csrf_token %}
+              <button class="bg-green-600 text-white px-3 py-1 rounded">Activate</button>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="7" class="p-4 text-center text-gray-500">No products</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% include "backoffice/_pagination.html" %}
+{% endblock %}

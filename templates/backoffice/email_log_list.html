@@ -1,0 +1,55 @@
+{% extends "backoffice/base.html" %}
+
+{% block title %}Email Logs{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Email Logs</h1>
+
+<form method="get" class="bg-white shadow rounded p-4 mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+  <input
+    type="text"
+    name="search"
+    value="{{ search|default:'' }}"
+    placeholder="Search by email, subject, body"
+    class="border rounded px-3 py-2"
+  >
+
+  <select name="status" class="border rounded px-3 py-2">
+    <option value="">All statuses</option>
+    <option value="pending" {% if status == "pending" %}selected{% endif %}>Pending</option>
+    <option value="sent" {% if status == "sent" %}selected{% endif %}>Sent</option>
+    <option value="failed" {% if status == "failed" %}selected{% endif %}>Failed</option>
+  </select>
+
+  <button class="bg-blue-600 text-white px-4 py-2 rounded">Filter</button>
+</form>
+
+<table class="min-w-full bg-white shadow rounded">
+  <thead>
+    <tr>
+      <th class="p-3 text-left">To</th>
+      <th class="p-3 text-left">Subject</th>
+      <th class="p-3 text-left">Status</th>
+      <th class="p-3 text-left">Date</th>
+      <th class="p-3 text-left">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for obj in page_obj %}
+      <tr class="border-t">
+        <td class="p-3">{{ obj.to_email }}</td>
+        <td class="p-3">{{ obj.subject }}</td>
+        <td class="p-3">{{ obj.status }}</td>
+        <td class="p-3">{{ obj.created_at }}</td>
+        <td class="p-3">
+          <a href="{% url 'backoffice:email_log_detail' obj.id %}" class="text-blue-600 underline">View</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5" class="p-4 text-center text-gray-500">No email logs</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% include "backoffice/_pagination.html" %}
+{% endblock %}

@@ -7,7 +7,7 @@ from apps.inventory.services import reserve_stock
 from apps.promotions.services import calculate_coupon_discount
 from apps.payments.services import create_payment_for_order
 from apps.shipping.services import create_shipment_for_order
-from apps.notifications.tasks import create_order_notification_task
+from apps.notifications.tasks import create_order_notification_task, send_order_created_email
 
 from apps.cart.models import Cart
 from .models import Order, OrderItem, OrderStatusHistory
@@ -76,6 +76,7 @@ def create_order_from_cart(user, shipping_address, billing_address, shipping_met
     create_payment_for_order(order)
     create_shipment_for_order(order=order, shipping_method=shipping_method)
     create_order_notification_task.delay(order.id)
+    send_order_created_email.delay(order.user.email, order.order_number,)
 
     return order
 

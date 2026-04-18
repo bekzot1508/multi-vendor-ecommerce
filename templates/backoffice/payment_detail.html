@@ -1,0 +1,47 @@
+{% extends "backoffice/base.html" %}
+
+{% block title %}Payment Detail{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Payment {{ payment.external_reference }}</h1>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div class="bg-white shadow rounded p-6 space-y-2">
+    <p><strong>Order:</strong> {{ payment.order.order_number }}</p>
+    <p><strong>Customer:</strong> {{ payment.order.user.email }}</p>
+    <p><strong>Amount:</strong> ${{ payment.amount }}</p>
+    <p><strong>Status:</strong> {{ payment.status }}</p>
+    <p><strong>Provider:</strong> {{ payment.provider_name }}</p>
+  </div>
+
+  <div class="bg-white shadow rounded p-6">
+    <h2 class="text-lg font-semibold mb-4">Transactions</h2>
+    <div class="space-y-3">
+      {% for tx in payment.transactions.all %}
+        <div class="border rounded p-4">
+          <p>{{ tx.transaction_type }} | {{ tx.status }}</p>
+          <p>${{ tx.amount }}</p>
+          <p class="text-xs text-gray-500 mt-1">{{ tx.created_at }}</p>
+        </div>
+      {% empty %}
+        <p>No transactions.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="bg-white shadow rounded p-6 mt-6">
+  <h2 class="text-lg font-semibold mb-4">Callback Logs</h2>
+  <div class="space-y-3">
+    {% for cb in payment.callback_logs.all %}
+      <div class="border rounded p-4">
+        <p><strong>{{ cb.callback_id }}</strong></p>
+        <p>Processed: {{ cb.processed }}</p>
+        <p class="text-xs text-gray-500 mt-1">{{ cb.created_at }}</p>
+      </div>
+    {% empty %}
+      <p>No callback logs.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

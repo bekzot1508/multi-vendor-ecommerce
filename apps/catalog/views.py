@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 
-from apps.shops.models import Shop
+from apps.shops.models import Shop, ShopStatus
 from apps.users.models import UserRole
 from apps.inventory.models import InventoryRecord
 from .models import Product, ProductImage, ProductVariant
@@ -49,7 +49,12 @@ class SellerProductListView(LoginRequiredMixin, View):
             messages.error(request, "Only sellers can access product management.")
             return redirect("users:profile")
 
-        shop = get_object_or_404(Shop, owner=request.user)
+        shop = Shop.objects.filter(owner=request.user).first()
+
+        if not shop:
+            messages.error(request, "You need to create a shop first.")
+            return redirect("shops:create")
+
         products = Product.objects.filter(shop=shop).select_related("category", "brand")
 
         return render(
@@ -72,7 +77,9 @@ class SellerProductCreateView(LoginRequiredMixin, View):
         if request.user.role != UserRole.SELLER:
             messages.error(request, "Only sellers can create products.")
             return redirect("users:profile")
-
+        elif request.user.shop.status != ShopStatus.APPROVED:
+            messages.error(request, "Your Shop is not approved to create Product. wait for!")
+            return redirect("catalog:seller_product_list")
         form = ProductForm()
         return render(request, self.template_name, {"form": form})
 
@@ -105,6 +112,9 @@ class SellerProductUpdateView(LoginRequiredMixin, View):
         if request.user.role != UserRole.SELLER:
             messages.error(request, "Only sellers can update products.")
             return redirect("users:profile")
+        elif request.user.shop.status != ShopStatus.APPROVED:
+            messages.error(request, f"Your Shop is {request.user.shop.status}")
+            return redirect("catalog:seller_product_list")
 
         shop = get_object_or_404(Shop, owner=request.user)
         product = get_object_or_404(Product, pk=pk, shop=shop)
@@ -153,6 +163,9 @@ class SellerProductDeleteView(LoginRequiredMixin, View):
         if request.user.role != UserRole.SELLER:
             messages.error(request, "Only sellers can delete products.")
             return redirect("users:profile")
+        elif request.user.shop.status != ShopStatus.APPROVED:
+            messages.error(request, f"Your Shop is {request.user.shop.status}.")
+            return redirect("catalog:seller_product_list")
 
         shop = get_object_or_404(Shop, owner=request.user)
         product = get_object_or_404(Product, pk=pk, shop=shop)
@@ -186,6 +199,9 @@ class SellerProductManageView(LoginRequiredMixin, View):
         if request.user.role != UserRole.SELLER:
             messages.error(request, "Only sellers can manage products.")
             return redirect("users:profile")
+        elif request.user.shop.status != ShopStatus.APPROVED:
+            messages.error(request, f"Your Shop is {request.user.shop.status}")
+            return redirect("catalog:seller_product_list")
 
         shop = get_object_or_404(Shop, owner=request.user)
 

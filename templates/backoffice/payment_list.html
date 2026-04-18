@@ -1,0 +1,60 @@
+{% extends "backoffice/base.html" %}
+
+{% block title %}Payments{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Payments</h1>
+
+<form method="get" class="bg-white shadow rounded p-4 mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+  <input
+    type="text"
+    name="search"
+    value="{{ search|default:'' }}"
+    placeholder="Search by reference, order, customer"
+    class="border rounded px-3 py-2"
+  >
+
+  <select name="status" class="border rounded px-3 py-2">
+    <option value="">All statuses</option>
+    <option value="created" {% if status == "created" %}selected{% endif %}>Created</option>
+    <option value="pending" {% if status == "pending" %}selected{% endif %}>Pending</option>
+    <option value="success" {% if status == "success" %}selected{% endif %}>Success</option>
+    <option value="failed" {% if status == "failed" %}selected{% endif %}>Failed</option>
+    <option value="cancelled" {% if status == "cancelled" %}selected{% endif %}>Cancelled</option>
+    <option value="refunded" {% if status == "refunded" %}selected{% endif %}>Refunded</option>
+  </select>
+
+  <button class="bg-blue-600 text-white px-4 py-2 rounded">Filter</button>
+</form>
+
+<table class="min-w-full bg-white shadow rounded">
+  <thead>
+    <tr>
+      <th class="p-3 text-left">Reference</th>
+      <th class="p-3 text-left">Order</th>
+      <th class="p-3 text-left">Customer</th>
+      <th class="p-3 text-left">Amount</th>
+      <th class="p-3 text-left">Status</th>
+      <th class="p-3 text-left">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for obj in page_obj %}
+      <tr class="border-t">
+        <td class="p-3">{{ obj.external_reference }}</td>
+        <td class="p-3">{{ obj.order.order_number }}</td>
+        <td class="p-3">{{ obj.order.user.email }}</td>
+        <td class="p-3">${{ obj.amount }}</td>
+        <td class="p-3">{{ obj.status }}</td>
+        <td class="p-3">
+          <a href="{% url 'backoffice:payment_detail' obj.id %}" class="text-blue-600 underline">View</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6" class="p-4 text-center text-gray-500">No payments</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% include "backoffice/_pagination.html" %}
+{% endblock %}

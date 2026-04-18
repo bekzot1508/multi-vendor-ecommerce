@@ -1,0 +1,55 @@
+{% extends "backoffice/base.html" %}
+
+{% block title %}Order Detail{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Order {{ order.order_number }}</h1>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+  <div class="bg-white shadow rounded p-6 space-y-2">
+    <p><strong>Customer:</strong> {{ order.user.email }}</p>
+    <p><strong>Status:</strong> {{ order.status }}</p>
+    <p><strong>Subtotal:</strong> ${{ order.subtotal }}</p>
+    <p><strong>Discount:</strong> ${{ order.discount_amount }}</p>
+    <p><strong>Shipping:</strong> ${{ order.shipping_amount }}</p>
+    <p><strong>Total:</strong> ${{ order.total_amount }}</p>
+  </div>
+
+  <div class="bg-white shadow rounded p-6 space-y-2">
+    <p><strong>Payment:</strong> {% if order.payment %}{{ order.payment.status }}{% else %}-{% endif %}</p>
+    <p><strong>Shipment:</strong> {% if order.shipment %}{{ order.shipment.status }}{% else %}-{% endif %}</p>
+    <p><strong>Placed at:</strong> {{ order.placed_at|default:"-" }}</p>
+    <p><strong>Paid at:</strong> {{ order.paid_at|default:"-" }}</p>
+  </div>
+</div>
+
+<div class="bg-white shadow rounded p-6 mb-6">
+  <h2 class="text-xl font-semibold mb-4">Items</h2>
+  <div class="space-y-3">
+    {% for item in order.items.all %}
+      <div class="border rounded p-4">
+        <p><strong>{{ item.product_name_snapshot }}</strong> — {{ item.variant_name_snapshot }}</p>
+        <p>Qty: {{ item.quantity }}</p>
+        <p>Unit price: ${{ item.unit_price }}</p>
+        <p>Line total: ${{ item.line_total }}</p>
+        <p>Item status: {{ item.status }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="bg-white shadow rounded p-6">
+  <h2 class="text-xl font-semibold mb-4">Status History</h2>
+  <div class="space-y-3">
+    {% for h in order.status_history.all %}
+      <div class="border rounded p-4">
+        <p>{{ h.old_status }} → {{ h.new_status }}</p>
+        <p>{{ h.note|default:"-" }}</p>
+        <p class="text-xs text-gray-500 mt-1">{{ h.created_at }}</p>
+      </div>
+    {% empty %}
+      <p>No status history.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

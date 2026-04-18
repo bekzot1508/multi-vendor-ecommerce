@@ -1,0 +1,18 @@
+{% extends "backoffice/base.html" %}
+
+{% block title %}User Detail{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">User Detail</h1>
+
+<div class="bg-white shadow rounded p-6 space-y-2">
+  <p><strong>Full Name:</strong> {{ object.full_name }}</p>
+  <p><strong>Username:</strong> {{ object.username }}</p>
+  <p><strong>Email:</strong> {{ object.email }}</p>
+  <p><strong>Role:</strong> {{ object.role }}</p>
+  <p><strong>Active:</strong> {{ object.is_active }}</p>
+  <p><strong>Staff:</strong> {{ object.is_staff }}</p>
+  <p><strong>Superuser:</strong> {{ object.is_superuser }}</p>
+  <p><strong>Created:</strong> {{ object.created_at }}</p>
+</div>
+{% endblock %}

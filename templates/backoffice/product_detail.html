@@ -1,0 +1,47 @@
+{% extends "backoffice/base.html" %}
+
+{% block title %}Product Detail{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Product Detail</h1>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+  <div class="bg-white shadow rounded p-6 space-y-2">
+    <p><strong>Name:</strong> {{ object.name }}</p>
+    <p><strong>Shop:</strong> {{ object.shop.name }}</p>
+    <p><strong>Category:</strong> {{ object.category }}</p>
+    <p><strong>Brand:</strong> {{ object.brand|default:"-" }}</p>
+    <p><strong>Slug:</strong> {{ object.slug }}</p>
+    <p><strong>Active:</strong> {{ object.is_active }}</p>
+    <p><strong>Description:</strong> {{ object.description|default:"-" }}</p>
+  </div>
+
+  <div class="bg-white shadow rounded p-6">
+    <h2 class="text-lg font-semibold mb-4">Variants</h2>
+    <div class="space-y-3">
+      {% for variant in object.variants.all %}
+        <div class="border rounded p-4">
+          <p><strong>{{ variant.name }}</strong></p>
+          <p>SKU: {{ variant.sku }}</p>
+          <p>Price: ${{ variant.price }}</p>
+          <p>Compare at: $<a class="line-through">{{ variant.compare_at_price|default:"-" }}<a/></p>
+          <p>Active: {{ variant.is_active }}</p>
+        </div>
+      {% empty %}
+        <p>No variants.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="bg-white shadow rounded p-6">
+  <h2 class="text-lg font-semibold mb-4">Images</h2>
+  <div class="flex gap-4 flex-wrap">
+    {% for image in object.images.all %}
+      <img src="{{ image.image.url }}" alt="{{ image.alt_text }}" class="w-40 h-40 object-cover border rounded">
+    {% empty %}
+      <p>No images.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

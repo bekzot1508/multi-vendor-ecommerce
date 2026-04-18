@@ -7,8 +7,12 @@
 
   <div class="bg-white shadow rounded-xl p-6 space-y-3">
       <p><strong>Username:</strong> {{ request.user.username }}</p>
+      <p><strong>Full Name:</strong> {{ request.user.full_name }}</p>
       <p><strong>Email:</strong> {{ request.user.email }}</p>
       <p><strong>Role:</strong> {{ request.user.role }}</p>
+      {% if request.user.shop %}
+         <p><strong>Shop:</strong> {{ request.user.shop.name }}</p>
+      {% endif %}
   </div>
 
   <div class="mt-6 space-y-2">
@@ -44,6 +48,10 @@
         <a href="{% url 'analytics:seller_sales' %}"
            class="block px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
             Seller Sales
+        </a>
+      <a href="{% url 'payouts:seller' %}"
+           class="block px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
+            Seller Payouts
         </a>
     {% endif %}
 

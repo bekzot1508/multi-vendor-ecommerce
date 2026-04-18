@@ -1,0 +1,75 @@
+{% extends "backoffice/base.html" %}
+
+{% block title %}Users{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Users</h1>
+
+<form method="get" class="bg-white shadow rounded p-4 mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+  <input
+    type="text"
+    name="search"
+    value="{{ search|default:'' }}"
+    placeholder="Search by name, email, username"
+    class="border rounded px-3 py-2"
+  >
+
+  <select name="role" class="border rounded px-3 py-2">
+    <option value="">All roles</option>
+    <option value="customer" {% if role == "customer" %}selected{% endif %}>Customer</option>
+    <option value="seller" {% if role == "seller" %}selected{% endif %}>Seller</option>
+    <option value="admin" {% if role == "admin" %}selected{% endif %}>Admin</option>
+  </select>
+
+  <select name="is_active" class="border rounded px-3 py-2">
+    <option value="">All statuses</option>
+    <option value="true" {% if is_active == "true" %}selected{% endif %}>Active</option>
+    <option value="false" {% if is_active == "false" %}selected{% endif %}>Inactive</option>
+  </select>
+
+  <button class="bg-blue-600 text-white px-4 py-2 rounded">Filter</button>
+</form>
+
+<table class="min-w-full bg-white shadow rounded">
+  <thead>
+    <tr>
+      <th class="p-3 text-left">Full Name</th>
+      <th class="p-3 text-left">Email</th>
+      <th class="p-3 text-left">Role</th>
+      <th class="p-3 text-left">Active</th>
+      <th class="p-3 text-left">Date</th>
+      <th class="p-3 text-left">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for obj in page_obj %}
+      <tr class="border-t">
+        <td class="p-3">{{ obj.full_name }}</td>
+        <td class="p-3">{{ obj.email }}</td>
+        <td class="p-3">{{ obj.role }}</td>
+        <td class="p-3">{{ obj.is_active }}</td>
+        <td class="p-3">{{ obj.created_at }}</td>
+        <td class="p-3 flex gap-2">
+          <a href="{% url 'backoffice:user_detail' obj.id %}" class="text-blue-600 underline">View</a>
+
+          {% if obj.is_active %}
+            <form method="post" action="{% url 'backoffice:user_deactivate' obj.id %}">
+              {% csrf_token %}
+              <button class="bg-red-600 text-white px-3 py-1 rounded">Deactivate</button>
+            </form>
+          {% else %}
+            <form method="post" action="{% url 'backoffice:user_activate' obj.id %}">
+              {% csrf_token %}
+              <button class="bg-green-600 text-white px-3 py-1 rounded">Activate</button>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6" class="p-4 text-center text-gray-500">No users</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% include "backoffice/_pagination.html" %}
+{% endblock %}

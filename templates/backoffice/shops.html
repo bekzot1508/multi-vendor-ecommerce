@@ -1,0 +1,78 @@
+{% extends "backoffice/base.html" %}
+
+{% block title %}Shops{% endblock %}
+
+{% block content %}
+
+    <h1 class="text-2xl font-bold mb-6">
+        Shops
+    </h1>
+
+    <table class="min-w-full bg-white shadow rounded">
+
+        <thead>
+            <tr>
+                <th class="p-3 text-left">Name</th>
+                <th class="p-3 text-left">Owner</th>
+                <th class="p-3 text-left">Owner Email</th>
+                <th class="p-3 text-left">Status</th>
+                <th class="p-3 text-left">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for shop in shops %}
+
+                <tr class="border-t">
+
+                    <td class="p-3">
+                        {{ shop.name }}
+                    </td>
+
+                    <td class="p-3">
+                        {{ shop.owner.username }}
+                    </td>
+
+                    <td class="p-3">
+                        {{ shop.owner.email }}
+                    </td>
+
+                    <td class="p-3">
+                        {{ shop.status }}
+                    </td>
+
+                    <td class="p-3 flex gap-2">
+
+                        <form method="post" action="{% url 'backoffice:approve_shop' shop.id %}">
+                            {% csrf_token %}
+                            <button class="bg-green-600 text-white px-3 py-1 rounded">
+                               Approve
+                            </button>
+                        </form>
+
+                        <form method="post" action="{% url 'backoffice:reject_shop' shop.id %}">
+                            {% csrf_token %}
+                            <button class="bg-yellow-600 text-white px-3 py-1 rounded">
+                                Reject
+                            </button>
+                        </form>
+
+                        <form method="post" action="{% url 'backoffice:block_shop' shop.id %}">
+                            {% csrf_token %}
+                            <button class="bg-red-600 text-white px-3 py-1 rounded">
+                                Block
+                            </button>
+                        </form>
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+{% endblock %}

@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.views import View
+from apps.backoffice.mixins import BackofficeAccessMixin
 
 from apps.users.models import UserRole
 
@@ -14,7 +15,7 @@ from .selectors import (
 #********************************
 #   Admin dashboard
 #********************************
-class AdminDashboardView(LoginRequiredMixin, View):
+class AdminDashboardView(BackofficeAccessMixin, View):
     template_name = "analytics/admin_dashboard.html"
 
     def get(self, request):

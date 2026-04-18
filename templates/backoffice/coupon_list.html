@@ -1,0 +1,39 @@
+{% extends "backoffice/base.html" %}
+
+{% block title %}Coupons{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+  <h1 class="text-2xl font-bold">Coupons</h1>
+  <a href="{% url 'backoffice:coupon_create' %}" class="bg-blue-600 text-white px-4 py-2 rounded">+ Create</a>
+</div>
+
+<table class="min-w-full bg-white shadow rounded">
+  <thead>
+    <tr>
+      <th class="p-3 text-left">Code</th>
+      <th class="p-3 text-left">Type</th>
+      <th class="p-3 text-left">Value</th>
+      <th class="p-3 text-left">Active</th>
+      <th class="p-3 text-left">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for obj in coupons %}
+      <tr class="border-t">
+        <td class="p-3">{{ obj.code }}</td>
+        <td class="p-3">{{ obj.discount_type }}</td>
+        <td class="p-3">{{ obj.value }}</td>
+        <td class="p-3">{{ obj.is_active }}</td>
+        <td class="p-3">
+          <a href="{% url 'backoffice:coupon_update' obj.id %}" class="text-blue-600 underline">Edit</a>
+          |
+          <a href="{% url 'backoffice:coupon_delete' obj.id %}" class="text-red-600 underline">Delete</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5" class="p-4 text-center text-gray-500">No coupons</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

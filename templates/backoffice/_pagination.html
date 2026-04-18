@@ -1,0 +1,25 @@
+{% if page_obj.has_other_pages %}
+  <div class="mt-6 flex items-center gap-2">
+    {% if page_obj.has_previous %}
+      <a
+        href="?{% if search %}search={{ search }}&{% endif %}{% if role %}role={{ role }}&{% endif %}{% if is_active %}is_active={{ is_active }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_obj.previous_page_number }}"
+        class="px-3 py-2 border font-semibold rounded bg-green-600"
+      >
+        Previous
+      </a>
+    {% endif %}
+
+    <span class="px-3 py-2 font-semibold bg-gray-600 rounded">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+      <a
+        href="?{% if search %}search={{ search }}&{% endif %}{% if role %}role={{ role }}&{% endif %}{% if is_active %}is_active={{ is_active }}&{% endif %}{% if status %}status={{ status }}&{% endif %}page={{ page_obj.next_page_number }}"
+        class="px-3 py-2 border font-semibold rounded bg-green-600"
+      >
+        Next
+      </a>
+    {% endif %}
+  </div>
+{% endif %}
