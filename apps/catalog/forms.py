@@ -75,12 +75,18 @@ class ProductVariantForm(forms.ModelForm):
 class ProductImageForm(forms.ModelForm):
     class Meta:
         model = ProductImage
-        fields = (
-            "image",
-            "alt_text",
-            "is_primary",
-            "sort_order",
-        )
+        fields = ["variant", "image", "alt_text", "is_primary", "sort_order"]
+
+    def __init__(self, *args, **kwargs):
+        product = kwargs.pop("product", None)
+        super().__init__(*args, **kwargs)
+
+        # 🔥 faqat shu product variantlarini ko‘rsatadi
+        if product:
+            self.fields["variant"].queryset = product.variants.all()
+
+        # optional qilish
+        self.fields["variant"].required = False
 
         # this is for style(UI)
         widgets = {

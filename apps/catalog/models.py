@@ -95,6 +95,15 @@ class ProductImage(TimeStampedModel):
         related_name="images",
     )
 
+    # 🔥 YANGI FIELD (CORE FIX)
+    variant = models.ForeignKey(
+        "catalog.ProductVariant",
+        on_delete=models.CASCADE,
+        related_name="images",
+        null=True,
+        blank=True,
+    )
+
     image = models.ImageField(upload_to="products/images/")
     alt_text = models.CharField(max_length=255, blank=True)
 

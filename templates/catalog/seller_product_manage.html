@@ -85,7 +85,14 @@
                 alt="{{ image.alt_text }}"
                 class="w-40 h-40 object-cover border rounded mb-3"
               >
-
+                <p>
+                  Variant:
+                  {% if image.variant %}
+                    {{ image.variant.name }}
+                  {% else %}
+                    <span class="text-gray-500">Product-level</span>
+                  {% endif %}
+                </p>
               <p>Alt text: {{ image.alt_text|default:"-" }}</p>
               <p>Primary: {{ image.is_primary }}</p>
               <p>Sort order: {{ image.sort_order }}</p>

@@ -10,6 +10,7 @@ from .models import Product, ProductImage, ProductVariant
 
 from .forms import ProductForm, ProductImageForm, ProductVariantForm
 from apps.reviews.selectors import get_product_reviews
+from .selectors import get_product_images_for_variant
 
 
 #****************************
@@ -26,6 +27,15 @@ class ProductDetailView(View):
             is_active=True,
         )
 
+        variant_id = request.GET.get("variant")
+
+        selected_variant = None
+        images = product.images.filter(variant__isnull=True)
+
+        if variant_id:
+            selected_variant = product.variants.filter(id=variant_id).first()
+            images = get_product_images_for_variant(product, selected_variant)
+
         reviews = get_product_reviews(product)
 
         return render(
@@ -33,8 +43,11 @@ class ProductDetailView(View):
             self.template_name,
             {
                 "product": product,
+                "variants": product.variants.all(),
+                "selected_variant": selected_variant,
+                "images": images,
                 "reviews": reviews,
-            },
+            }
         )
 
 
@@ -405,7 +418,7 @@ class SellerImageCreateView(LoginRequiredMixin, View):
             shop__owner=request.user,
         )
 
-        form = ProductImageForm()
+        form = ProductImageForm(product=product)
 
         return render(
             request,
@@ -428,6 +441,7 @@ class SellerImageCreateView(LoginRequiredMixin, View):
         )
 
         form = ProductImageForm(request.POST, request.FILES)
+        form = ProductImageForm(request.POST, request.FILES, product=product)
 
         if form.is_valid():
             image = form.save(commit=False)
