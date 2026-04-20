@@ -7,7 +7,6 @@ from .selectors import get_seller_available_balance
 
 @transaction.atomic
 def request_payout(user):
-
     balance = get_seller_available_balance(user)
 
     if balance <= 0:

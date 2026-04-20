@@ -13,20 +13,24 @@
   </div>
 
   <form method="post" action="{% url 'shipping:seller_status' shipment.id %}" class="bg-white shadow rounded p-6">
-    {% csrf_token %}
+  {% csrf_token %}
 
-    {% if shipment.order.status == "paid" or shipment.order.status == "processing" or shipment.order.status == "shipped" %}
-      <select name="status" class="border p-2 rounded w-full mb-4">
-        <option value="pending">Pending</option>
-        <option value="packed">Packed</option>
-        <option value="handed_to_courier">Handed to courier</option>
-        <option value="in_transit">In transit</option>
-        <option value="delivered">Delivered</option>
-      </select>
+  {% if shipment.order.status != "awaiting_payment" and shipment.order.status != "payment_failed" and shipment.order.status != "cancelled" %}
+      {% if shipment.status != "delivered" %}
+        <select name="status" class="border p-2 rounded w-full mb-4">
+          <option value="pending">Pending</option>
+          <option value="packed">Packed</option>
+          <option value="handed_to_courier">Handed to courier</option>
+          <option value="in_transit">In transit</option>
+          <option value="delivered">Delivered</option>
+        </select>
 
-      <button class="bg-blue-600 text-white px-4 py-2 rounded">
-        Update Shipment Status
-      </button>
+        <button class="bg-blue-600 text-white px-4 py-2 rounded">
+          Update Shipment Status
+        </button>
+      {% else %}
+        <p class="text-gray-600">This shipment is already delivered and cannot be changed.</p>
+      {% endif %}
     {% else %}
       <p class="text-red-600">
         Shipment cannot be updated because payment was not completed or the order is closed.

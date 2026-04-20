@@ -4,8 +4,8 @@ from django.db import transaction
 from django.utils import timezone
 
 from apps.orders.models import Order, OrderStatusHistory
-
 from .models import Shipment
+
 
 
 #********************************
@@ -30,6 +30,7 @@ def create_shipment_for_order(*, order, shipping_method):
 #********************************
 @transaction.atomic
 def update_shipment_status(*, shipment, changed_by, new_status):
+    from apps.orders.services import recompute_order_status
     order = shipment.order
 
     if order.status in [
@@ -50,6 +51,10 @@ def update_shipment_status(*, shipment, changed_by, new_status):
     if new_status not in allowed_statuses:
         raise ValueError("Invalid shipment status")
 
+    # Delivered shipment orqaga qaytmasin
+    if shipment.status == Shipment.Status.DELIVERED and new_status != Shipment.Status.DELIVERED:
+        raise ValueError("Delivered shipment cannot be downgraded")
+
     old_shipment_status = shipment.status
     shipment.status = new_status
 
@@ -61,27 +66,10 @@ def update_shipment_status(*, shipment, changed_by, new_status):
 
     shipment.save(update_fields=["status", "shipped_at", "delivered_at", "updated_at"])
 
-    order = shipment.order
-    old_order_status = order.status
-    new_order_status = None
-
-    if new_status in [Shipment.Status.HANDED_TO_COURIER, Shipment.Status.IN_TRANSIT]:
-        if order.status in [Order.Status.PAID, Order.Status.PROCESSING]:
-            new_order_status = Order.Status.SHIPPED
-
-    elif new_status == Shipment.Status.DELIVERED:
-        new_order_status = Order.Status.DELIVERED
-
-    if new_order_status and new_order_status != old_order_status:
-        order.status = new_order_status
-        order.save(update_fields=["status", "updated_at"])
-
-        OrderStatusHistory.objects.create(
-            order=order,
-            old_status=old_order_status,
-            new_status=new_order_status,
-            changed_by=changed_by,
-            note=f"Shipment status updated from {old_shipment_status} to {new_status}.",
-        )
+    recompute_order_status(
+        order,
+        changed_by=changed_by,
+        note=f"Shipment status updated from {old_shipment_status} to {new_status}.",
+    )
 
     return shipment

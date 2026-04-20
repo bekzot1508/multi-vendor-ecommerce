@@ -16,10 +16,10 @@
     <p><strong>Total:</strong> ${{ item.line_total }}</p>
   </div>
 
-  <div class="mt-6 bg-white shadow rounded p-6">
-    <h2 class="text-lg font-semibold mb-4">Update Status</h2>
+ <div class="mt-6 bg-white shadow rounded p-6">
+  <h2 class="text-lg font-semibold mb-4">Update Status</h2>
 
-    {% if item.order.status == "paid" or item.order.status == "processing" or item.order.status == "shipped" %}
+  {% if item.order.status != "awaiting_payment" and item.order.status != "payment_failed" and item.order.status != "cancelled" %}
       {% if item.status != "cancelled" and item.status != "delivered" %}
         <form method="post" action="{% url 'orders:seller_item_status' item.id %}">
           {% csrf_token %}
@@ -32,7 +32,7 @@
           </select>
 
           <button class="bg-blue-600 text-white px-4 py-2 rounded">
-            Update Item Status
+            Update Status
           </button>
         </form>
       {% else %}
@@ -40,7 +40,7 @@
       {% endif %}
     {% else %}
       <p class="text-red-600">
-        This order item cannot be updated because the payment was not completed or the order is closed.
+        This order item cannot be updated because payment was not completed or the order is closed.
       </p>
     {% endif %}
   </div>

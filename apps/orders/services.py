@@ -13,6 +13,70 @@ from apps.cart.models import Cart
 from .models import Order, OrderItem, OrderStatusHistory
 
 
+#************************************
+#   ORDER STATUS RECOMPUTE HELPER
+#************************************
+def recompute_order_status(order, changed_by=None, note=""):
+    """
+    Order statusni itemlar + shipment + payment holatidan qayta hisoblaydi.
+    Source of truth:
+    - payment failure => payment_failed
+    - shipment delivered + all items delivered => delivered
+    - shipment in transit / handed to courier => shipped
+    - any item processing/packed/shipped => processing yoki shipped
+    - paid order default => paid
+    """
+
+    old_status = order.status
+    new_status = old_status
+
+    if hasattr(order, "payment") and order.payment.status in ["failed", "cancelled"]:
+        new_status = Order.Status.PAYMENT_FAILED
+
+    elif hasattr(order, "shipment") and order.shipment.status == "delivered":
+        all_items_delivered = not order.items.exclude(
+            status=OrderItem.Status.DELIVERED
+        ).exists()
+
+        if all_items_delivered:
+            new_status = Order.Status.DELIVERED
+        else:
+            new_status = Order.Status.SHIPPED
+
+    elif hasattr(order, "shipment") and order.shipment.status in [
+        "handed_to_courier",
+        "in_transit",
+    ]:
+        new_status = Order.Status.SHIPPED
+
+    elif order.items.filter(
+        status__in=[
+            OrderItem.Status.PROCESSING,
+            OrderItem.Status.PACKED,
+            OrderItem.Status.SHIPPED,
+        ]
+    ).exists():
+        new_status = Order.Status.PROCESSING
+
+    elif old_status not in [Order.Status.AWAITING_PAYMENT, Order.Status.PAYMENT_FAILED]:
+        new_status = Order.Status.PAID
+
+    if new_status != old_status:
+        order.status = new_status
+        order.save(update_fields=["status", "updated_at"])
+
+        OrderStatusHistory.objects.create(
+            order=order,
+            old_status=old_status,
+            new_status=new_status,
+            changed_by=changed_by,
+            note=note or "Order status recomputed from item/shipment state.",
+        )
+
+    return order
+
+
+
 #**********************
 #   CORE FUNCTION
 #**********************
@@ -88,12 +152,12 @@ def create_order_from_cart(user, shipping_address, billing_address, shipping_met
 def update_seller_order_item_status(*, seller_user, order_item, new_status):
     """
     Seller faqat o'z shopiga tegishli order itemni yangilay oladi.
+    Delivered order/item flow erta muzlab qolmasligi kerak.
     """
 
     if order_item.shop.owner_id != seller_user.id:
         raise ValueError("You cannot manage this order item")
 
-    # Payment qilinmagan yoki payment failed/cancel bo'lgan orderlarni seller boshqarmaydi
     if order_item.order.status in [
         Order.Status.AWAITING_PAYMENT,
         Order.Status.PAYMENT_FAILED,
@@ -101,12 +165,8 @@ def update_seller_order_item_status(*, seller_user, order_item, new_status):
     ]:
         raise ValueError("This order item cannot be updated because payment is not completed")
 
-    # Cancelled item qayta update qilinmaydi
     if order_item.status == OrderItem.Status.CANCELLED:
         raise ValueError("Cancelled order item cannot be updated")
-
-    if order_item.shop.owner_id != seller_user.id:
-        raise ValueError("You cannot manage this order item")
 
     allowed_statuses = {
         OrderItem.Status.PROCESSING,
@@ -118,36 +178,20 @@ def update_seller_order_item_status(*, seller_user, order_item, new_status):
     if new_status not in allowed_statuses:
         raise ValueError("Invalid status")
 
+    # Delivered bo'lgan item qayta orqaga tushmasin
+    if order_item.status == OrderItem.Status.DELIVERED and new_status != OrderItem.Status.DELIVERED:
+        raise ValueError("Delivered order item cannot be downgraded")
+
     old_item_status = order_item.status
     order_item.status = new_status
     order_item.save(update_fields=["status", "updated_at"])
 
-    order = order_item.order
-
-    old_order_status = order.status
-    updated_order_status = None
-
-    if new_status == OrderItem.Status.PROCESSING and order.status == Order.Status.PAID:
-        updated_order_status = Order.Status.PROCESSING
-
-    elif new_status == OrderItem.Status.SHIPPED and order.status in [Order.Status.PAID, Order.Status.PROCESSING]:
-        updated_order_status = Order.Status.SHIPPED
-
-    elif new_status == OrderItem.Status.DELIVERED:
-        all_items_delivered = not order.items.exclude(status=OrderItem.Status.DELIVERED).exists()
-        if all_items_delivered:
-            updated_order_status = Order.Status.DELIVERED
-
-    if updated_order_status and updated_order_status != old_order_status:
-        order.status = updated_order_status
-        order.save(update_fields=["status", "updated_at"])
-
-        OrderStatusHistory.objects.create(
-            order=order,
-            old_status=old_order_status,
-            new_status=updated_order_status,
-            changed_by=seller_user,
-            note=f"Seller updated item {order_item.id} from {old_item_status} to {new_status}.",
-        )
+    recompute_order_status(
+        order_item.order,
+        changed_by=seller_user,
+        note=f"Seller updated item {order_item.id} from {old_item_status} to {new_status}.",
+    )
 
     return order_item
+
+
