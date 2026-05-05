@@ -20,7 +20,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", default=False, cast=bool)
-DEBUG = os.getenv("DEBUG", "False") == "True"
 
 DJANGO_APPS = [
     "django.contrib.admin",
