@@ -11,7 +11,9 @@ ALLOWED_HOSTS = config(
     default="127.0.0.1,localhost",
 ).split(",")
 
-CSRF_TRUSTED_ORIGINS=https://multi-vendor-ecommerce-0z5b.onrender.com
+CSRF_TRUSTED_ORIGINS = [
+    "https://multi-vendor-ecommerce-0z5b.onrender.com"
+]
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
