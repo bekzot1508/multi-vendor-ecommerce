@@ -134,7 +134,7 @@ def create_order_from_cart(user, shipping_address, billing_address, shipping_met
         order=order,
         old_status=Order.Status.PENDING,
         new_status=Order.Status.AWAITING_PAYMENT,
-        note="Order created from cart, waiting for payment.",
+        note="Order created from tests, waiting for payment.",
     )
 
     create_payment_for_order(order)
@@ -195,3 +195,37 @@ def update_seller_order_item_status(*, seller_user, order_item, new_status):
     return order_item
 
 
+from django.db import transaction
+
+from .models import Order, OrderStatusHistory
+
+
+@transaction.atomic
+def cancel_order(order, changed_by=None, note=""):
+    """
+    Faqat hali to'lanmagan / yakunlanmagan orderlarni cancel qilishga ruxsat.
+    """
+    if order.status in [
+        Order.Status.PAID,
+        Order.Status.PROCESSING,
+        Order.Status.SHIPPED,
+        Order.Status.DELIVERED,
+    ]:
+        raise ValueError("This order cannot be cancelled")
+
+    if order.status == Order.Status.CANCELLED:
+        return order
+
+    old_status = order.status
+    order.status = Order.Status.CANCELLED
+    order.save(update_fields=["status", "updated_at"])
+
+    OrderStatusHistory.objects.create(
+        order=order,
+        old_status=old_status,
+        new_status=Order.Status.CANCELLED,
+        changed_by=changed_by,
+        note=note or "Order cancelled.",
+    )
+
+    return order

@@ -9,7 +9,7 @@ from apps.promotions.services import (
 )
 
 #**************************
-#   Get or create cart
+#   Get or create tests
 #**************************
 def get_or_create_cart(user):
     cart, _ = Cart.objects.get_or_create(user=user)
@@ -18,7 +18,7 @@ def get_or_create_cart(user):
 
 
 #**************************
-#   Add item to cart
+#   Add item to tests
 #**************************
 @transaction.atomic
 def add_item_to_cart(user, variant, quantity):

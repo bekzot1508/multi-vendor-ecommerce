@@ -6,11 +6,11 @@ from apps.catalog.models import ProductVariant
 
 
 #**********************
-#   cart model
+#   tests model
 #**********************
 class Cart(TimeStampedModel):
     """
-    Har bir user uchun bitta faol cart.
+    Har bir user uchun bitta faol tests.
     """
 
     user = models.OneToOneField(
@@ -31,7 +31,7 @@ class Cart(TimeStampedModel):
 
 
 #************************
-#   cart item model
+#   tests item model
 #************************
 class CartItem(TimeStampedModel):
     cart = models.ForeignKey(

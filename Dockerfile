@@ -14,7 +14,9 @@ RUN apt-get update && apt-get install -y \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements/base.txt /tmp/requirements-base.txt
-RUN pip install --upgrade pip && pip install -r /tmp/requirements-base.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app
+
+CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000"]

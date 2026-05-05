@@ -8,7 +8,7 @@ from .views import (
     ApplyCouponView,
 )
 
-app_name = "cart"
+app_name = "tests"
 
 urlpatterns = [
     path("", CartDetailView.as_view(), name="detail"),

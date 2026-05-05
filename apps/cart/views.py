@@ -35,7 +35,7 @@ class CartDetailView(LoginRequiredMixin, View):
 
 
 #**************************
-#   ➕ Add to cart views
+#   ➕ Add to tests views
 #**************************
 class AddToCartView(LoginRequiredMixin, View):
     def post(self, request, variant_id):

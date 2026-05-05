@@ -2,21 +2,24 @@ import pytest
 
 from apps.payouts.services import request_payout
 from apps.payouts.selectors import get_seller_available_balance
-from tests.factories import OrderItemFactory, SellerFactory
+from apps.common.tests.factories import SellerFactory, OrderItemFactory, get_or_create_shop_for_seller, OrderFactory
 
 
 @pytest.mark.django_db
 def test_payout_balance_correct():
     seller = SellerFactory()
+    shop = get_or_create_shop_for_seller(seller)
 
     OrderItemFactory(
-        shop__owner=seller,
+        shop=shop,
+        variant__product__shop=shop,
         status="delivered",
         line_total=500,
     )
 
     OrderItemFactory(
-        shop__owner=seller,
+        shop=shop,
+        variant__product__shop=shop,
         status="delivered",
         line_total=500,
     )
@@ -29,11 +32,18 @@ def test_payout_balance_correct():
 @pytest.mark.django_db
 def test_request_payout_reduces_balance():
     seller = SellerFactory()
+    shop = get_or_create_shop_for_seller(seller)
+
+    order = OrderFactory(status="paid")
 
     OrderItemFactory(
-        shop__owner=seller,
+        order=order,
+        shop=shop,
+        variant__product__shop=shop,
         status="delivered",
         line_total=1000,
+        unit_price=1000,
+        quantity=1,
     )
 
     payout = request_payout(user=seller)

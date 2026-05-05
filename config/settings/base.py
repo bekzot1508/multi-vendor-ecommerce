@@ -2,13 +2,22 @@ from pathlib import Path
 from decouple import config
 from celery.schedules import crontab
 from django.conf.global_settings import EMAIL_BACKEND
+import os
+
+import dj_database_url
+
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1,localhost").split(",")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://" + host for host in ALLOWED_HOSTS if host
+]
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", default=False, cast=bool)
-
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1,localhost").split(",")
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 DJANGO_APPS = [
     "django.contrib.admin",
@@ -52,6 +61,7 @@ INTERNAL_IPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -125,8 +135,6 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = "Asia/Dubai"
 
-
-
 CELERY_BEAT_SCHEDULE = {
     "daily-sales-snapshot": {
         "task": "apps.analytics_app.tasks.generate_daily_sales_snapshot",
@@ -134,9 +142,11 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-EMAIL_HOST_PASSWORD = "bhih nykb pbmv snzx"
+# EMAIL_HOST_PASSWORD = "bhih nykb pbmv snzx"
 
-
+DATABASES = {
+    "default": dj_database_url.config(default=os.getenv("DATABASE_URL"))
+}
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="no-reply@example.com")
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

@@ -55,7 +55,7 @@ class CheckoutView(LoginRequiredMixin, View):
 
         except ValueError as e:
             messages.error(request, str(e))
-            return redirect("cart:detail")
+            return redirect("tests:detail")
 
 
 #***************************

@@ -13,3 +13,7 @@ Faker==28.1.0
 coverage==7.6.1
 django-tailwind==3.8.0
 django-tailwind[cookiecutter,honcho,reload]
+gunicorn
+whitenoise
+psycopg[binary]
+dj-database-url==2.3.0
