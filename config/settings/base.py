@@ -6,12 +6,13 @@ import os
 
 import dj_database_url
 
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1,localhost").split(",")
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = config(
+    "ALLOWED_HOSTS",
+    default="127.0.0.1,localhost",
+).split(",")
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://" + host for host in ALLOWED_HOSTS if host
-]
+CSRF_TRUSTED_ORIGINS=https://multi-vendor-ecommerce-0z5b.onrender.com
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
