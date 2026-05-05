@@ -144,9 +144,13 @@ CELERY_BEAT_SCHEDULE = {
 
 # EMAIL_HOST_PASSWORD = "bhih nykb pbmv snzx"
 
+
 DATABASES = {
-    "default": dj_database_url.config(default=os.getenv("DATABASE_URL"))
+    "default": dj_database_url.config(
+        default=config("DATABASE_URL")
+    )
 }
+
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="no-reply@example.com")
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
